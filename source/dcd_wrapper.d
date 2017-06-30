@@ -26,9 +26,9 @@ class DcdWrapper
         info(cache.symbolsAllocated, " symbols cached.");
     }
 
-    void addImport(string importPathLine)
+    void addImport(string pathLine)
     {
-        importPaths ~= importPathLine;
+        importPaths ~= pathLine;
     }
 
     const(string)[] listImports() const
