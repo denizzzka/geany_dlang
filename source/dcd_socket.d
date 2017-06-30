@@ -28,7 +28,21 @@ class DcdSocket
 
     this()
     {
-        Socket socket = createSocket(socketFile, port);
+        if(useTCP)
+        {
+            socket = new TcpSocket(AddressFamily.INET);
+            socket.connect(new InternetAddress("localhost", port));
+        }
+        else
+        {
+            socket = new Socket(AddressFamily.UNIX, SocketType.STREAM);
+            socket.connect(new UnixAddress(socketFile));
+        }
+
+        import core.time : dur;
+
+        socket.setOption(SocketOptionLevel.SOCKET, SocketOption.RCVTIMEO, dur!"seconds"(5));
+        socket.blocking = true;
     }
 
     ~this()
@@ -46,36 +60,5 @@ class DcdSocket
     {
         //~ if (!sendRequest(socket, request))
             //~ return 1;
-    }
-
-    // Copy'n'paste from the original DCD code:
-    private static Socket createSocket(string socketFile, ushort port)
-    {
-        import common.socket;
-        import core.time : dur;
-
-        Socket socket;
-        if (socketFile is null)
-        {
-            socket = new TcpSocket(AddressFamily.INET);
-            socket.connect(new InternetAddress("localhost", port));
-        }
-        else
-        {
-            version(Windows)
-            {
-                // should never be called with non-null socketFile on Windows
-                assert(false);
-            }
-            else
-            {
-                socket = new Socket(AddressFamily.UNIX, SocketType.STREAM);
-                socket.connect(new UnixAddress(socketFile));
-            }
-        }
-
-        socket.setOption(SocketOptionLevel.SOCKET, SocketOption.RCVTIMEO, dur!"seconds"(5));
-        socket.blocking = true;
-        return socket;
     }
 }

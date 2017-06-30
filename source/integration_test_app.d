@@ -1,9 +1,8 @@
-version(IntegrationTest)
-{
-    import dcd_socket: DcdSocket;
+version(IntegrationTest):
 
-    void main()
-    {
-        auto socket = new DcdSocket();
-    }
+import dcd_socket: DcdSocket;
+
+void main()
+{
+    auto socket = new DcdSocket();
 }
