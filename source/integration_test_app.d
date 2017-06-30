@@ -4,5 +4,7 @@ import dcd_wrapper;
 
 void main()
 {
-    auto socket = new DcdWrapper();
+    auto wrapper = new DcdWrapper();
+
+    destroy(wrapper);
 }
