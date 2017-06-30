@@ -26,7 +26,7 @@ class DcdSocket
         socketFile = generateSocketName();
     }
 
-    this(ushort port)
+    this()
     {
         Socket socket = createSocket(socketFile, port);
     }

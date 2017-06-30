@@ -1,14 +1,15 @@
 import geany_plugin_d_api;
-//~ import std.stdio: writeln;
+import dcd_socket: DcdSocket;
 
 enum serverStart = "dub run dcd --build=release --config=server";
+DcdSocket socket;
 
 extern(System):
 
 gboolean hello_init(GeanyPlugin *plugin, gpointer pdata)
 {
-    //~ writeln("Hello World from D plugin!\n");
-    /* Perform advanced set up here */
+    socket = new DcdSocket();
+
     return true;
 }
 
