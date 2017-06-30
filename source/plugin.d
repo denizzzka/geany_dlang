@@ -8,33 +8,28 @@ DcdWrapper wrapper;
 
 extern(System):
 
-gboolean hello_init(GeanyPlugin *plugin, gpointer pdata)
+gboolean initPlugin(GeanyPlugin *plugin, gpointer pdata)
 {
     wrapper = new DcdWrapper();
 
     return true;
 }
 
-void hello_cleanup(GeanyPlugin *plugin, gpointer pdata)
+void cleanupPlugin(GeanyPlugin *plugin, gpointer pdata)
 {
     destroy(wrapper);
 }
 
 void geany_load_module(GeanyPlugin *plugin)
 {
-    /* Step 1: Set metadata */
-    plugin.info.name = "D HelloWorld";
-    plugin.info.description = "D plugin example";
-    plugin.info._version = "1.0";
-    plugin.info.author = "John Doe <john.doe@example.org>";
+    plugin.funcs._init = &initPlugin;
+    plugin.funcs.cleanup = &cleanupPlugin;
 
-    /* Step 2: Set functions */
-    plugin.funcs._init = &hello_init;
-    plugin.funcs.cleanup = &hello_cleanup;
+    plugin.info.name = "D language";
+    plugin.info.description = "Adds D language support";
+    plugin.info._version = "0.0.1";
+    plugin.info.author = "Denis Feklushkin <denis.feklushkin@gmail.com>";
 
-    /* Step 3: Register! */
     if (GEANY_PLUGIN_REGISTER(plugin, 225))
         return;
-    /* alternatively:
-    GEANY_PLUGIN_REGISTER_FULL(plugin, 225, data, free_func); */
 }
