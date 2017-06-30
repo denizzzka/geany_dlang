@@ -17,7 +17,7 @@ gboolean hello_init(GeanyPlugin *plugin, gpointer pdata)
 
 void hello_cleanup(GeanyPlugin *plugin, gpointer pdata)
 {
-    //~ writeln("Bye, World!\n");
+    destroy(wrapper);
 }
 
 void geany_load_module(GeanyPlugin *plugin)
