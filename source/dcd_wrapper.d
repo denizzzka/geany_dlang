@@ -12,10 +12,11 @@ static this()
 
 class DcdWrapper
 {
+    private ModuleCache cache;
+
     this()
     {
-        ModuleCache cache = ModuleCache(new ASTAllocator);
+        cache = ModuleCache(new ASTAllocator);
         cache.addImportPaths(importPaths);
-        //~ infof("Import directories:\n    %-(%s\n    %)", cache.getImportPaths());
     }
 }

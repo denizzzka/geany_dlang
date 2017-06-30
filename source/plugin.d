@@ -1,16 +1,16 @@
 version(IntegrationTest){} else:
 
 import geany_plugin_d_api;
-import dcd_socket: DcdSocket;
+import dcd_wrapper;
 
 enum serverStart = "dub run dcd --build=release --config=server";
-DcdSocket socket;
+DcdWrapper wrapper;
 
 extern(System):
 
 gboolean hello_init(GeanyPlugin *plugin, gpointer pdata)
 {
-    socket = new DcdSocket();
+    wrapper = new DcdWrapper();
 
     return true;
 }
