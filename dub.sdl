@@ -3,6 +3,14 @@ description "Geany D language support plugin"
 authors "Denis Feklushkin <denis.feklushkin@gmail.com>"
 copyright "Copyright © 2017, Denis Feklushkin"
 license "GNU"
-targetType "dynamicLibrary"
-dependency "geany_plugin_d_api" version="*"
 dependency "dcd" version="~>0.9.0-beta.1"
+
+configuration "default" {
+	dependency "geany_plugin_d_api" version="*"
+	targetType "dynamicLibrary"
+}
+
+configuration "integration_test" {
+	targetType "executable"
+	versions "IntegrationTest"
+}

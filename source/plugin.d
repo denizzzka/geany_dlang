@@ -1,3 +1,5 @@
+version(IntegrationTest){} else:
+
 import geany_plugin_d_api;
 import dcd_socket: DcdSocket;
 
