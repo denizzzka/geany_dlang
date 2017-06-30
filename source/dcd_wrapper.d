@@ -6,7 +6,7 @@ import std.experimental.logger;
 import common.messages;
 import common.messages: Request = AutocompleteRequest, Response = AutocompleteResponse;
 
-const string[] importPaths;
+private string[] importPaths;
 
 static this()
 {
@@ -26,6 +26,11 @@ class DcdWrapper
         info(cache.symbolsAllocated, " symbols cached.");
     }
 
+    void addImport(string importPathLine)
+    {
+        importPaths ~= importPathLine;
+    }
+
     const(string)[] listImports() const
     {
         return importPaths;
@@ -42,7 +47,7 @@ class DcdWrapper
         import server.autocomplete;
         import std.conv: to;
 
-        info("Do request, kind is ", request.kind.to!string);
+        info("Do request. kind = ", request.kind.to!string);
 
         Response ret;
 
