@@ -10,22 +10,32 @@ private DcdWrapper wrapper;
 
 void init_keybindings()
 {
-    import geany_d_binding.keybindings;
     import geany_d_binding.pluginutils;
+    import geany_d_binding.keybindings;
     import gdk.Gdk: GdkModifierType;
     import gtk.Widget: GtkWidget;
 
-    GeanyKeyGroup* key_group = plugin_set_key_group(geany_plugin, "dlang_keys", 1, null);
+    const gsize COUNT_KB = 1;
+
+    GeanyKeyGroup* key_group = plugin_set_key_group(
+            geany_plugin,
+            "dlang_keys",
+            COUNT_KB,
+            null // GeanyKeyGroupCallback
+        );
+
+    const gint KB_COMPLETE_IDX = 0;
+    const guint KEY = 0;
 
     keybindings_set_item(
             key_group,
-            0,
+            KB_COMPLETE_IDX,
             &force_completion,
-            0,
+            KEY,
             cast(GdkModifierType) 0,
             "exec",
             "complete",
-            cast(GtkWidget*) null
+            null // GtkWidget*
         );
 }
 
@@ -35,8 +45,8 @@ void force_completion(guint key_id)
 {
     import geany_d_binding.document;
     import geany_d_binding.filetypes;
-    import common.messages;
     import geany_d_binding.sciwrappers;
+    import common.messages;
 
     GeanyDocument* doc = document_get_current();
 
