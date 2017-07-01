@@ -78,13 +78,6 @@ gboolean initPlugin(GeanyPlugin *plugin, gpointer pdata)
 {
     geany_plugin = plugin;
 
-    //~ {
-        //~ import geany_d_binding.dialogs;
-        //~ import gtkc.gtktypes: GtkMessageType;
-
-        //~ dialogs_show_msgbox(GtkMessageType.INFO, "Hello, World!");
-    //~ }
-
     try
         wrapper = new DcdWrapper();
     catch(Exception e)
