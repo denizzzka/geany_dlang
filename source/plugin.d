@@ -8,7 +8,7 @@ enum serverStart = "dub run dcd --build=release --config=server";
 private GeanyPlugin* geany_plugin;
 private DcdWrapper wrapper;
 
-void init_keybindings()
+void init_keybindings() nothrow
 {
     import geany_d_binding.pluginutils;
     import geany_d_binding.keybindings;
@@ -93,6 +93,8 @@ gboolean initPlugin(GeanyPlugin *plugin, gpointer pdata)
 
         return false;
     }
+
+    init_keybindings();
 
     return true;
 }
