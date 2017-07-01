@@ -28,5 +28,6 @@ void nothrowLog
     catch(Exception e)
     {
         // TODO: pass error to unthrowable geany logger
+        assert(false);
     }
 }

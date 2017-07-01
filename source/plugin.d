@@ -34,7 +34,6 @@ extern(System) nothrow:
 void force_completion(guint key_id)
 {
     import geany_plugin_d_api.document;
-    import geany_plugin_d_api.editor;
     import geany_plugin_d_api.filetypes;
     import common.messages;
     import geany_plugin_d_api.sciwrappers;
