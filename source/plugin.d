@@ -34,17 +34,24 @@ extern(System) nothrow:
 void force_completion(guint key_id)
 {
     import geany_plugin_d_api.document;
+    import geany_plugin_d_api.editor;
     import geany_plugin_d_api.filetypes;
     import common.messages;
+    import geany_plugin_d_api.sciwrappers;
 
     GeanyDocument* doc = document_get_current();
 
     if(doc != null && doc.file_type.id == GeanyFiletypeID.GEANY_FILETYPES_D)
     {
+        auto sci = doc.editor.sci;
+        const textLen = sci.sci_get_length;
+        char* textBuff = sci.sci_get_contents(-1);
+        scope(exit) g_free(textBuff);
+
         AutocompleteRequest req;
         req.kind = RequestKind.autocomplete;
-        //~ req.sourceCode = doc.editor.sci;
-        req.cursorPosition = 0x140;
+        req.cursorPosition = sci.sci_get_current_position;
+        req.sourceCode = cast(ubyte[]) textBuff[0 .. textLen+1];
 
         auto ret = wrapper.doRequest(req);
 
