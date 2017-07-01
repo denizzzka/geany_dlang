@@ -2,10 +2,11 @@ version(IntegrationTest){} else:
 
 import geany_plugin_d_api;
 import dcd_wrapper;
+import logger;
 
 enum serverStart = "dub run dcd --build=release --config=server";
 private GeanyPlugin* geany_plugin;
-DcdWrapper wrapper;
+private DcdWrapper wrapper;
 
 void init_keybindings()
 {
@@ -32,9 +33,26 @@ extern(System) nothrow:
 
 void force_completion(guint key_id)
 {
+    import geany_plugin_d_api.document;
+    import geany_plugin_d_api.filetypes;
+    import common.messages;
+
+    GeanyDocument* doc = document_get_current();
+
+    if(doc != null && doc.file_type.id == GeanyFiletypeID.GEANY_FILETYPES_D)
+    {
+        AutocompleteRequest req;
+        req.kind = RequestKind.autocomplete;
+        //~ req.sourceCode = doc.editor.sci;
+        req.cursorPosition = 0x140;
+
+        auto ret = wrapper.doRequest(req);
+
+        //TODO: use ret
+    }
 }
 
-gboolean initPlugin(GeanyPlugin *plugin, gpointer pdata) nothrow
+gboolean initPlugin(GeanyPlugin *plugin, gpointer pdata)
 {
     geany_plugin = plugin;
 
@@ -42,7 +60,7 @@ gboolean initPlugin(GeanyPlugin *plugin, gpointer pdata) nothrow
         wrapper = new DcdWrapper();
     catch(Exception e)
     {
-        nothrowFatal(e.msg);
+        nothrowLog!"fatal"(e.msg);
 
         return false;
     }
@@ -50,15 +68,15 @@ gboolean initPlugin(GeanyPlugin *plugin, gpointer pdata) nothrow
     return true;
 }
 
-void cleanupPlugin(GeanyPlugin *plugin, gpointer pdata) nothrow
+void cleanupPlugin(GeanyPlugin *plugin, gpointer pdata)
 {
     try
         destroy(wrapper);
     catch(Exception e)
-        nothrowFatal(e.msg);
+        nothrowLog!"fatal"(e.msg);
 }
 
-void geany_load_module(GeanyPlugin *plugin) nothrow
+void geany_load_module(GeanyPlugin *plugin)
 {
     plugin.funcs._init = &initPlugin;
     plugin.funcs.cleanup = &cleanupPlugin;
@@ -71,26 +89,5 @@ void geany_load_module(GeanyPlugin *plugin) nothrow
     try
         GEANY_PLUGIN_REGISTER(plugin, 225);
     catch(Exception e)
-        nothrowFatal(e.msg);
-}
-
-private void nothrowFatal
-(
-    int line = __LINE__,
-    string file = __FILE__,
-    string funcName = __FUNCTION__,
-    string prettyFuncName = __PRETTY_FUNCTION__,
-    string moduleName = __MODULE__,
-    A...
-)
-(lazy string msg) nothrow
-{
-    import std.experimental.logger;
-
-    try
-        fatal!(line, file, funcName, prettyFuncName, moduleName)(msg);
-    catch(Exception e)
-    {
-        // TODO: pass error to unthrowable geany logger
-    }
+        nothrowLog!"fatal"(e.msg);
 }
