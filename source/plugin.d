@@ -2,7 +2,6 @@ version(IntegrationTest){} else:
 
 import geany_plugin_d_api;
 import dcd_wrapper;
-import std.experimental.logger;
 
 enum serverStart = "dub run dcd --build=release --config=server";
 private GeanyPlugin* geany_plugin;
@@ -43,7 +42,7 @@ gboolean initPlugin(GeanyPlugin *plugin, gpointer pdata) nothrow
         wrapper = new DcdWrapper();
     catch(Exception e)
     {
-        //~ fatal(e.msg);
+        nothrowFatal(e.msg);
 
         return false;
     }
@@ -55,8 +54,8 @@ void cleanupPlugin(GeanyPlugin *plugin, gpointer pdata) nothrow
 {
     try
         destroy(wrapper);
-    catch(Exception e){}
-        //~ fatal(e.msg);
+    catch(Exception e)
+        nothrowFatal(e.msg);
 }
 
 void geany_load_module(GeanyPlugin *plugin) nothrow
@@ -71,6 +70,27 @@ void geany_load_module(GeanyPlugin *plugin) nothrow
 
     try
         GEANY_PLUGIN_REGISTER(plugin, 225);
-    catch(Exception e){}
-        //~ fatal(e.msg);
+    catch(Exception e)
+        nothrowFatal(e.msg);
+}
+
+private void nothrowFatal
+(
+    int line = __LINE__,
+    string file = __FILE__,
+    string funcName = __FUNCTION__,
+    string prettyFuncName = __PRETTY_FUNCTION__,
+    string moduleName = __MODULE__,
+    A...
+)
+(lazy string msg) nothrow
+{
+    import std.experimental.logger;
+
+    try
+        fatal!(line, file, funcName, prettyFuncName, moduleName)(msg);
+    catch(Exception e)
+    {
+        // TODO: pass error to unthrowable geany logger
+    }
 }
