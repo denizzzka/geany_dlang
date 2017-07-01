@@ -9,7 +9,7 @@ subConfiguration "dcd" "library"
 #dependency "dsymbol" version="~>0.2.4"
 
 configuration "default" {
-	dependency "geany_plugin_d_api" version="*"
+	dependency "geany_d_binding" version="*"
 	targetType "dynamicLibrary"
 }
 

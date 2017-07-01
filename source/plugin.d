@@ -1,6 +1,6 @@
 version(IntegrationTest){} else:
 
-import geany_plugin_d_api;
+import geany_d_binding;
 import dcd_wrapper;
 import logger;
 
@@ -10,8 +10,8 @@ private DcdWrapper wrapper;
 
 void init_keybindings()
 {
-    import geany_plugin_d_api.keybindings;
-    import geany_plugin_d_api.pluginutils;
+    import geany_d_binding.keybindings;
+    import geany_d_binding.pluginutils;
     import gdk.Gdk: GdkModifierType;
     import gtk.Widget: GtkWidget;
 
@@ -33,10 +33,10 @@ extern(System) nothrow:
 
 void force_completion(guint key_id)
 {
-    import geany_plugin_d_api.document;
-    import geany_plugin_d_api.filetypes;
+    import geany_d_binding.document;
+    import geany_d_binding.filetypes;
     import common.messages;
-    import geany_plugin_d_api.sciwrappers;
+    import geany_d_binding.sciwrappers;
 
     GeanyDocument* doc = document_get_current();
 
@@ -55,12 +55,25 @@ void force_completion(guint key_id)
         auto ret = wrapper.doRequest(req);
 
         //TODO: use ret
+        {
+            import geany_d_binding.dialogs;
+            import gtkc.gtktypes: GtkMessageType;
+
+            dialogs_show_msgbox(GtkMessageType.INFO, "%s", ret);
+        }
     }
 }
 
 gboolean initPlugin(GeanyPlugin *plugin, gpointer pdata)
 {
     geany_plugin = plugin;
+
+    //~ {
+        //~ import geany_d_binding.dialogs;
+        //~ import gtkc.gtktypes: GtkMessageType;
+
+        //~ dialogs_show_msgbox(GtkMessageType.INFO, "Hello, World!");
+    //~ }
 
     try
         wrapper = new DcdWrapper();
