@@ -65,12 +65,17 @@ void force_completion(guint key_id)
         auto ret = wrapper.doRequest(req);
 
         //TODO: use ret
+        try
         {
             import geany_d_binding.dialogs;
             import gtkc.gtktypes: GtkMessageType;
 
-            dialogs_show_msgbox(GtkMessageType.INFO, "%s", ret);
+            import std.format;
+            import std.string;
+            auto s = format("%s", ret);
+            dialogs_show_msgbox(GtkMessageType.INFO, s.toStringz);
         }
+        catch(Exception){}
     }
 }
 
