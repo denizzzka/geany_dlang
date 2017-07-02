@@ -62,7 +62,7 @@ void completionAttempt() nothrow
                 doc.editor.sci,
                 Sci.SCI_WORDSTARTPOSITION,
                 cast(uptr_t) currPos,
-                null
+                cast(sptr_t) true
             );
 
         const separator = cast(char) scintilla_send_message(
