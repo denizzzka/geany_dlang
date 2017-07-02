@@ -39,6 +39,60 @@ void init_keybindings() nothrow
         );
 }
 
+import common.messages;
+import geany_d_binding.geany.document;
+
+void completionAttempt() nothrow
+{
+    import geany_d_binding.scintilla.types;
+    import geany_d_binding.scintilla.Scintilla;
+    import geany_d_binding.scintilla.ScintillaGTK;
+    import std.string;
+
+    GeanyDocument* doc = document_get_current();
+    const res = calculateCompletion(doc);
+
+    if(res.completions.length > 0)
+    {
+        string preparedList;
+
+        foreach(ref c; res.completions)
+            preparedList ~= c;
+
+        scintilla_send_message(
+                doc.editor.sci,
+                Sci.SCI_AUTOCSHOW,
+                preparedList.length,
+                cast(sptr_t) preparedList.toStringz
+            );
+    }
+}
+
+AutocompleteResponse calculateCompletion(GeanyDocument* doc) nothrow
+{
+    import geany_d_binding.geany.filetypes;
+    import geany_d_binding.geany.sciwrappers;
+
+    AutocompleteResponse ret;
+
+    if(doc != null && doc.file_type.id == GeanyFiletypeID.GEANY_FILETYPES_D)
+    {
+        auto sci = doc.editor.sci;
+        const textLen = sci.sci_get_length;
+        char* textBuff = sci.sci_get_contents(-1);
+        scope(exit) g_free(textBuff);
+
+        AutocompleteRequest req;
+        req.kind = RequestKind.autocomplete;
+        req.cursorPosition = sci.sci_get_current_position;
+        req.sourceCode = cast(ubyte[]) textBuff[0 .. textLen+1];
+
+        ret = wrapper.doRequest(req);
+    }
+
+    return ret;
+}
+
 extern(System) nothrow:
 
 import gtkc.gobjecttypes: GObject;
@@ -54,12 +108,10 @@ gboolean on_editor_notify(GObject *object, GeanyEditor *editor, SCNotification *
     with(Msg)
     switch (nt.nmhdr.code)
     {
-        case SCI_AUTOCSHOW:
-        case SCI_USERLISTSHOW:
-            dialogs_show_msgbox(GtkMessageType.INFO, "Catched!");
+        case SCN_CHARADDED:
+            completionAttempt();
             break;
 
-        case SCN_CHARADDED:
         case SCN_KEY:
         case SCN_UPDATEUI:
         case SCN_MODIFIED:
@@ -83,7 +135,6 @@ void force_completion(guint key_id)
     import geany_d_binding.geany.document;
     import geany_d_binding.geany.filetypes;
     import geany_d_binding.geany.sciwrappers;
-    import common.messages;
 
     GeanyDocument* doc = document_get_current();
 
