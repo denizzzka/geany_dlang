@@ -1,6 +1,6 @@
 version(IntegrationTest){} else:
 
-import geany_d_binding;
+import geany_d_binding.geany;
 import dcd_wrapper;
 import logger;
 
@@ -10,8 +10,8 @@ private DcdWrapper wrapper;
 
 void init_keybindings() nothrow
 {
-    import geany_d_binding.pluginutils;
-    import geany_d_binding.keybindings;
+    import geany_d_binding.geany.pluginutils;
+    import geany_d_binding.geany.keybindings;
     import gdk.Gdk: GdkModifierType;
     import gtk.Widget: GtkWidget;
 
@@ -43,9 +43,9 @@ extern(System) nothrow:
 
 void force_completion(guint key_id)
 {
-    import geany_d_binding.document;
-    import geany_d_binding.filetypes;
-    import geany_d_binding.sciwrappers;
+    import geany_d_binding.geany.document;
+    import geany_d_binding.geany.filetypes;
+    import geany_d_binding.geany.sciwrappers;
     import common.messages;
 
     GeanyDocument* doc = document_get_current();
@@ -67,7 +67,7 @@ void force_completion(guint key_id)
         //TODO: use ret
         try
         {
-            import geany_d_binding.dialogs;
+            import geany_d_binding.geany.dialogs;
             import gtkc.gtktypes: GtkMessageType;
 
             import std.format;
