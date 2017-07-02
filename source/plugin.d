@@ -72,7 +72,7 @@ void force_completion(guint key_id)
 
             import std.format;
             import std.string;
-            auto s = format("%s", ret);
+            auto s = format("pos=%d, searchName=%s\n%s", req.cursorPosition, req.searchName, ret);
             dialogs_show_msgbox(GtkMessageType.INFO, s.toStringz);
         }
         catch(Exception){}
