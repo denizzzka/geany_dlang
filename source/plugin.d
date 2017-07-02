@@ -80,6 +80,20 @@ void attemptDisplayCompletionWindow() nothrow
                 preparedList ~= separator;
 
             preparedList ~= c;
+
+            switch(res.completionKinds[i])
+            {
+                case 'k':
+                    preparedList ~= "?1";
+                    break;
+
+                case 'v':
+                    preparedList ~= "?2";
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         scintilla_send_message(
