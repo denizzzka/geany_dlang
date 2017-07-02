@@ -82,9 +82,9 @@ void attemptDisplayCompletionWindow() nothrow
             preparedList ~= c;
         }
 
-        auto wasSort = scintilla_send_message(
+        scintilla_send_message(
                 doc.editor.sci,
-                Sci.SCI_AUTOCGETORDER,
+                Sci.SCI_AUTOCSETORDER,
                 cast(uptr_t) Sc.SC_ORDER_PERFORMSORT,
                 null
             );
@@ -97,13 +97,6 @@ void attemptDisplayCompletionWindow() nothrow
                 Sci.SCI_AUTOCSHOW,
                 cast(uptr_t) alreadyEnteredNum,
                 cast(sptr_t) preparedList.toStringz
-            );
-
-        scintilla_send_message(
-                doc.editor.sci,
-                Sci.SCI_AUTOCSETORDER,
-                cast(uptr_t) wasSort,
-                null
             );
     }
 }
