@@ -41,7 +41,11 @@ void init_keybindings() nothrow
 
 extern(System) nothrow:
 
-gboolean on_editor_notify()
+import gtkc.gobjecttypes: GObject;
+import geany_d_binding.geany.editor: GeanyEditor;
+import geany_d_binding.scintilla.Scintilla: SCNotification;
+
+gboolean on_editor_notify(GObject *object, GeanyEditor *editor, SCNotification *nt, gpointer data)
 {
     return false;
 }
