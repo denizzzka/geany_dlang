@@ -3,6 +3,8 @@ version(IntegrationTest){} else:
 import geany_d_binding.geany;
 import dcd_wrapper;
 import logger;
+import geany_d_binding.geany.sciwrappers;
+import std.conv: to;
 
 enum serverStart = "dub run dcd --build=release --config=server";
 private GeanyPlugin* geany_plugin;
@@ -54,7 +56,16 @@ void completionAttempt() nothrow
 
     if(res.completions.length > 0)
     {
-        const int separator = cast(char) scintilla_send_message(
+        const currPos = doc.editor.sci.sci_get_current_position;
+
+        const wordStartPos = cast(size_t) scintilla_send_message(
+                doc.editor.sci,
+                Sci.SCI_WORDSTARTPOSITION,
+                cast(uptr_t) currPos,
+                null
+            );
+
+        const separator = cast(char) scintilla_send_message(
                 doc.editor.sci,
                 Sci.SCI_AUTOCGETSEPARATOR,
                 null,
@@ -78,11 +89,14 @@ void completionAttempt() nothrow
                 null
             );
 
+        const size_t alreadyEnteredNum = currPos - wordStartPos;
+        nothrowLog!"trace"("alreadyEnteredNum="~alreadyEnteredNum.to!string);
+
         nothrowLog!"trace"("scintilla_send_message");
         scintilla_send_message(
                 doc.editor.sci,
                 Sci.SCI_AUTOCSHOW,
-                null, //FIXME: number of characters of the word already entered
+                cast(uptr_t) alreadyEnteredNum,
                 cast(sptr_t) preparedList.toStringz
             );
 
@@ -98,7 +112,6 @@ void completionAttempt() nothrow
 AutocompleteResponse calculateCompletion(GeanyDocument* doc) nothrow
 {
     import geany_d_binding.geany.filetypes;
-    import geany_d_binding.geany.sciwrappers;
 
     AutocompleteResponse ret;
 
@@ -130,7 +143,6 @@ gboolean on_editor_notify(GObject *object, GeanyEditor *editor, SCNotification *
 {
     import geany_d_binding.geany.dialogs;
     import gtkc.gtktypes: GtkMessageType;
-    import std.conv: to;
 
     with(Msg)
     switch (nt.nmhdr.code)
