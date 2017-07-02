@@ -75,7 +75,10 @@ void force_completion(guint key_id)
             auto s = format("pos=%d, searchName=%s\n%s", req.cursorPosition, req.searchName, ret);
             dialogs_show_msgbox(GtkMessageType.INFO, s.toStringz);
         }
-        catch(Exception){}
+        catch(Exception e)
+        {
+            nothrowLog!"error"(e.msg);
+        }
     }
 }
 

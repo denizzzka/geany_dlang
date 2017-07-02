@@ -23,7 +23,11 @@ void nothrowLog
         else static if(S == "info")
             info!(line, file, funcName, prettyFuncName, moduleName)(msg);
         else static if(S == "warning")
-            info!(line, file, funcName, prettyFuncName, moduleName)(msg);
+            warning!(line, file, funcName, prettyFuncName, moduleName)(msg);
+        else static if(S == "error")
+            error!(line, file, funcName, prettyFuncName, moduleName)(msg);
+        else
+            static assert(false, "Unsupported log type");
     }
     catch(Exception e)
     {
