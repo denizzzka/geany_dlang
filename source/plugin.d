@@ -54,16 +54,43 @@ void completionAttempt() nothrow
 
     if(res.completions.length > 0)
     {
+        const int separator = cast(char) scintilla_send_message(
+                doc.editor.sci,
+                Sci.SCI_AUTOCGETSEPARATOR,
+                null,
+                null
+            );
+
         string preparedList;
 
-        foreach(ref c; res.completions)
+        foreach(i, ref c; res.completions)
+        {
+            if(i != 0)
+                preparedList ~= separator;
+
             preparedList ~= c;
+        }
+
+        auto wasSort = scintilla_send_message(
+                doc.editor.sci,
+                Sci.SCI_AUTOCGETORDER,
+                cast(uptr_t) Sc.SC_ORDER_PERFORMSORT,
+                null
+            );
+
+        nothrowLog!"trace"("scintilla_send_message");
+        scintilla_send_message(
+                doc.editor.sci,
+                Sci.SCI_USERLISTSHOW,
+                cast(uptr_t) preparedList.length,
+                cast(sptr_t) preparedList.toStringz
+            );
 
         scintilla_send_message(
                 doc.editor.sci,
-                Sci.SCI_AUTOCSHOW,
-                preparedList.length,
-                cast(sptr_t) preparedList.toStringz
+                Sci.SCI_AUTOCSETORDER,
+                cast(uptr_t) wasSort,
+                null
             );
     }
 }
@@ -109,8 +136,10 @@ gboolean on_editor_notify(GObject *object, GeanyEditor *editor, SCNotification *
     switch (nt.nmhdr.code)
     {
         case SCN_CHARADDED:
+            nothrowLog!"trace"("SCN_CHARADDED received");
             completionAttempt();
             break;
+            //~ return true;
 
         case SCN_KEY:
         case SCN_UPDATEUI:
@@ -123,7 +152,6 @@ gboolean on_editor_notify(GObject *object, GeanyEditor *editor, SCNotification *
         default:
             auto c = cast(Msg) nt.nmhdr.code;
             nothrowLog!"trace"("Notify code="~c.to!string);
-            //~ nothrowLog!"trace"("Notify code="~nt.nmhdr.code.to!string);
             break;
     }
 
@@ -132,41 +160,25 @@ gboolean on_editor_notify(GObject *object, GeanyEditor *editor, SCNotification *
 
 void force_completion(guint key_id)
 {
-    import geany_d_binding.geany.document;
     import geany_d_binding.geany.filetypes;
     import geany_d_binding.geany.sciwrappers;
 
     GeanyDocument* doc = document_get_current();
+    auto ret = calculateCompletion(doc);
 
-    if(doc != null && doc.file_type.id == GeanyFiletypeID.GEANY_FILETYPES_D)
+    try
     {
-        auto sci = doc.editor.sci;
-        const textLen = sci.sci_get_length;
-        char* textBuff = sci.sci_get_contents(-1);
-        scope(exit) g_free(textBuff);
+        import geany_d_binding.geany.dialogs;
+        import gtkc.gtktypes: GtkMessageType;
 
-        AutocompleteRequest req;
-        req.kind = RequestKind.autocomplete;
-        req.cursorPosition = sci.sci_get_current_position;
-        req.sourceCode = cast(ubyte[]) textBuff[0 .. textLen+1];
-
-        auto ret = wrapper.doRequest(req);
-
-        //TODO: use ret
-        try
-        {
-            import geany_d_binding.geany.dialogs;
-            import gtkc.gtktypes: GtkMessageType;
-
-            import std.format;
-            import std.string;
-            auto s = format("pos=%d, searchName=%s\n%s", req.cursorPosition, req.searchName, ret);
-            dialogs_show_msgbox(GtkMessageType.INFO, s.toStringz);
-        }
-        catch(Exception e)
-        {
-            nothrowLog!"error"(e.msg);
-        }
+        import std.format;
+        import std.string;
+        auto s = format("%s", ret);
+        dialogs_show_msgbox(GtkMessageType.INFO, s.toStringz);
+    }
+    catch(Exception e)
+    {
+        nothrowLog!"error"(e.msg);
     }
 }
 
