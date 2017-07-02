@@ -43,10 +43,38 @@ extern(System) nothrow:
 
 import gtkc.gobjecttypes: GObject;
 import geany_d_binding.geany.editor: GeanyEditor;
-import geany_d_binding.scintilla.Scintilla: SCNotification;
+import geany_d_binding.scintilla.Scintilla: SCNotification, Msg;
 
 gboolean on_editor_notify(GObject *object, GeanyEditor *editor, SCNotification *nt, gpointer data)
 {
+    import geany_d_binding.geany.dialogs;
+    import gtkc.gtktypes: GtkMessageType;
+    import std.conv: to;
+
+    with(Msg)
+    switch (nt.nmhdr.code)
+    {
+        case SCI_AUTOCSHOW:
+        case SCI_USERLISTSHOW:
+            dialogs_show_msgbox(GtkMessageType.INFO, "Catched!");
+            break;
+
+        case SCN_CHARADDED:
+        case SCN_KEY:
+        case SCN_UPDATEUI:
+        case SCN_MODIFIED:
+        case SCN_PAINTED:
+        case SCN_FOCUSIN:
+        case SCN_FOCUSOUT:
+            break;
+
+        default:
+            auto c = cast(Msg) nt.nmhdr.code;
+            nothrowLog!"trace"("Notify code="~c.to!string);
+            //~ nothrowLog!"trace"("Notify code="~nt.nmhdr.code.to!string);
+            break;
+    }
+
     return false;
 }
 

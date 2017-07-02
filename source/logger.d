@@ -18,14 +18,16 @@ void nothrowLog
 
     try
     {
-        static if(S == "fatal")
-            fatal!(line, file, funcName, prettyFuncName, moduleName)(msg);
+        static if(S == "trace")
+            trace!(line, file, funcName, prettyFuncName, moduleName)(msg);
         else static if(S == "info")
             info!(line, file, funcName, prettyFuncName, moduleName)(msg);
         else static if(S == "warning")
             warning!(line, file, funcName, prettyFuncName, moduleName)(msg);
         else static if(S == "error")
             error!(line, file, funcName, prettyFuncName, moduleName)(msg);
+        else static if(S == "fatal")
+            fatal!(line, file, funcName, prettyFuncName, moduleName)(msg);
         else
             static assert(false, "Unsupported log type");
     }
