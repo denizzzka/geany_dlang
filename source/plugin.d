@@ -81,8 +81,8 @@ void completionAttempt() nothrow
         nothrowLog!"trace"("scintilla_send_message");
         scintilla_send_message(
                 doc.editor.sci,
-                Sci.SCI_USERLISTSHOW,
-                cast(uptr_t) preparedList.length,
+                Sci.SCI_AUTOCSHOW,
+                null, //FIXME: number of characters of the word already entered
                 cast(sptr_t) preparedList.toStringz
             );
 
