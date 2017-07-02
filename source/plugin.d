@@ -41,6 +41,11 @@ void init_keybindings() nothrow
 
 extern(System) nothrow:
 
+gboolean on_editor_notify()
+{
+    return false;
+}
+
 void force_completion(guint key_id)
 {
     import geany_d_binding.geany.document;
@@ -108,10 +113,24 @@ void cleanupPlugin(GeanyPlugin *plugin, gpointer pdata)
         nothrowLog!"fatal"(e.msg);
 }
 
+private PluginCallback[] callbacks;
+
+shared static this()
+{
+    import gtkc.gobjecttypes: GCallback;
+
+    callbacks =
+    [
+        PluginCallback("editor-notify", cast(GCallback) &on_editor_notify, false, null),
+        PluginCallback(null, null, false, null)
+    ];
+}
+
 void geany_load_module(GeanyPlugin *plugin)
 {
     plugin.funcs._init = &initPlugin;
     plugin.funcs.cleanup = &cleanupPlugin;
+    plugin.funcs.callbacks = &callbacks[0];
 
     plugin.info.name = "D language";
     plugin.info.description = "Adds D language support";
