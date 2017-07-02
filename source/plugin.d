@@ -5,6 +5,8 @@ import dcd_wrapper;
 import logger;
 import geany_d_binding.geany.sciwrappers;
 import std.conv: to;
+import common.messages;
+import geany_d_binding.geany.document;
 
 enum serverStart = "dub run dcd --build=release --config=server";
 private GeanyPlugin* geany_plugin;
@@ -41,10 +43,7 @@ void init_keybindings() nothrow
         );
 }
 
-import common.messages;
-import geany_d_binding.geany.document;
-
-void completionAttempt() nothrow
+void attemptDisplayCompletionWindow() nothrow
 {
     import geany_d_binding.scintilla.types;
     import geany_d_binding.scintilla.Scintilla;
@@ -128,6 +127,20 @@ AutocompleteResponse calculateCompletion(GeanyDocument* doc) nothrow
         req.sourceCode = cast(ubyte[]) textBuff[0 .. textLen+1];
 
         ret = wrapper.doRequest(req);
+
+        debug
+        {
+            import std.format;
+            import std.string;
+
+            string s = "AutocompleteRequest formatting failed";
+
+            try
+                s = format("%s", ret);
+            catch(Exception){}
+
+            nothrowLog!"trace"(s);
+        }
     }
 
     return ret;
@@ -149,7 +162,7 @@ gboolean on_editor_notify(GObject *object, GeanyEditor *editor, SCNotification *
     {
         case SCN_CHARADDED:
             nothrowLog!"trace"("SCN_CHARADDED received");
-            completionAttempt();
+            attemptDisplayCompletionWindow();
             break;
             //~ return true;
 
@@ -172,26 +185,7 @@ gboolean on_editor_notify(GObject *object, GeanyEditor *editor, SCNotification *
 
 void force_completion(guint key_id)
 {
-    import geany_d_binding.geany.filetypes;
-    import geany_d_binding.geany.sciwrappers;
-
-    GeanyDocument* doc = document_get_current();
-    auto ret = calculateCompletion(doc);
-
-    try
-    {
-        import geany_d_binding.geany.dialogs;
-        import gtkc.gtktypes: GtkMessageType;
-
-        import std.format;
-        import std.string;
-        auto s = format("%s", ret);
-        dialogs_show_msgbox(GtkMessageType.INFO, s.toStringz);
-    }
-    catch(Exception e)
-    {
-        nothrowLog!"error"(e.msg);
-    }
+    attemptDisplayCompletionWindow();
 }
 
 gboolean initPlugin(GeanyPlugin *plugin, gpointer pdata)
