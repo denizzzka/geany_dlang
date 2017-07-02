@@ -74,6 +74,7 @@ void completionAttempt() nothrow
 
         string preparedList;
 
+        // FIXME: replace by std function
         foreach(i, ref c; res.completions)
         {
             if(i != 0)
@@ -92,7 +93,6 @@ void completionAttempt() nothrow
         const size_t alreadyEnteredNum = currPos - wordStartPos;
         nothrowLog!"trace"("alreadyEnteredNum="~alreadyEnteredNum.to!string);
 
-        nothrowLog!"trace"("scintilla_send_message");
         scintilla_send_message(
                 doc.editor.sci,
                 Sci.SCI_AUTOCSHOW,
