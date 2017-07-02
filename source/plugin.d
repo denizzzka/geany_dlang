@@ -53,7 +53,7 @@ void attemptDisplayCompletionWindow() nothrow
     GeanyDocument* doc = document_get_current();
     const res = calculateCompletion(doc);
 
-    if(res.completions.length > 0)
+    if(res.completions.length > 0 && res.completionType == "identifiers")
     {
         const currPos = doc.editor.sci.sci_get_current_position;
 
