@@ -91,15 +91,22 @@ void attemptDisplaySomeWindow() nothrow
     {
         const currPos = doc.editor.sci.sci_get_current_position;
 
+        const separator = cast(char) scintilla_send_message(
+                doc.editor.sci,
+                Sci.SCI_AUTOCGETSEPARATOR,
+                null,
+                null
+            );
+
         with(CompletionType)
         switch(res.completionType)
         {
             case identifiers:
-                attemptDisplayCompletionWindow(doc, res, currPos);
+                attemptDisplayCompletionWindow(doc, res, separator, currPos);
                 break;
 
             case calltips:
-                attemptDisplayTipWindow(doc, res.completions, currPos);
+                attemptDisplayTipWindow(doc, res.completions, separator, currPos);
                 break;
 
             default:
@@ -109,20 +116,13 @@ void attemptDisplaySomeWindow() nothrow
     }
 }
 
-void attemptDisplayCompletionWindow(GeanyDocument* doc, in AutocompleteResponse res, int currPos) nothrow
+void attemptDisplayCompletionWindow(GeanyDocument* doc, in AutocompleteResponse res, char separator, int currPos) nothrow
 {
     const wordStartPos = cast(size_t) scintilla_send_message(
             doc.editor.sci,
             Sci.SCI_WORDSTARTPOSITION,
             cast(uptr_t) currPos,
             cast(sptr_t) true
-        );
-
-    const separator = cast(char) scintilla_send_message(
-            doc.editor.sci,
-            Sci.SCI_AUTOCGETSEPARATOR,
-            null,
-            null
         );
 
     string preparedList;
@@ -167,12 +167,17 @@ void attemptDisplayCompletionWindow(GeanyDocument* doc, in AutocompleteResponse 
         );
 }
 
-void attemptDisplayTipWindow(GeanyDocument* doc, in string[] tipTexts, int pos) nothrow
+void attemptDisplayTipWindow(GeanyDocument* doc, in string[] tipTexts, char separator, int pos) nothrow
 {
     string str;
 
-    foreach(ref s; tipTexts)
+    foreach(i, ref s; tipTexts)
+    {
+        if(i != 0)
+            str ~= separator;
+
         str ~= s;
+    }
 
     scintilla_send_message(
             doc.editor.sci,
