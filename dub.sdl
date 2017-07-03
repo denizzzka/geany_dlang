@@ -9,11 +9,11 @@ subConfiguration "dcd" "library"
 #dependency "dsymbol" version="~>0.2.4"
 
 configuration "default" {
-	dependency "geany_d_binding" version="*"
-	targetType "dynamicLibrary"
+    dependency "geany_d_binding" version="~>0.0.1"
+    targetType "dynamicLibrary"
 }
 
 configuration "integration_test" {
-	targetType "executable"
-	versions "IntegrationTest"
+    targetType "executable"
+    versions "IntegrationTest"
 }
