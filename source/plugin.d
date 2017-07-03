@@ -7,6 +7,7 @@ import geany_d_binding.geany.sciwrappers;
 import std.conv: to;
 import common.messages;
 import geany_d_binding.geany.document;
+import geany_d_binding.geany.filetypes;
 
 enum serverStart = "dub run dcd --build=release --config=server";
 private GeanyPlugin* geany_plugin;
@@ -19,7 +20,7 @@ void init_keybindings() nothrow
     import gdk.Gdk: GdkModifierType;
     import gtk.Widget: GtkWidget;
 
-    const gsize COUNT_KB = 1;
+    const gsize COUNT_KB = 2;
 
     GeanyKeyGroup* key_group = plugin_set_key_group(
             geany_plugin,
@@ -41,6 +42,18 @@ void init_keybindings() nothrow
             "complete",
             null // GtkWidget*
         );
+
+
+    keybindings_set_item(
+            key_group,
+            1,
+            &show_debug,
+            KEY,
+            cast(GdkModifierType) 0,
+            "exec 2",
+            "show debug",
+            null // GtkWidget*
+        );
 }
 
 void attemptDisplayCompletionWindow() nothrow
@@ -50,7 +63,32 @@ void attemptDisplayCompletionWindow() nothrow
     import geany_d_binding.scintilla.ScintillaGTK;
     import std.string;
 
+    static bool[string] importedDirs;
+
     GeanyDocument* doc = document_get_current();
+
+    if(doc != null && doc.file_type.id == GeanyFiletypeID.GEANY_FILETYPES_D)
+    {
+        import std.path;
+
+        string filename = doc.file_name.to!string;
+        string path = dirName(filename);
+
+        if(path !in importedDirs)
+        {
+            try
+            {
+                nothrowLog!"trace"("Begin adding import path "~path);
+
+                wrapper.addImportPaths([path.to!string]);
+
+                importedDirs[path] = true;
+            }
+            catch(Exception e)
+                nothrowLog!"warning"(e.msg);
+        }
+    }
+
     const res = calculateCompletion(doc);
 
     if(res.completions.length > 0 && res.completionType == CompletionType.identifiers)
@@ -117,8 +155,6 @@ void attemptDisplayCompletionWindow() nothrow
 
 AutocompleteResponse calculateCompletion(GeanyDocument* doc) nothrow
 {
-    import geany_d_binding.geany.filetypes;
-
     AutocompleteResponse ret;
 
     if(doc != null && doc.file_type.id == GeanyFiletypeID.GEANY_FILETYPES_D)
@@ -179,6 +215,7 @@ gboolean on_editor_notify(GObject *object, GeanyEditor *editor, SCNotification *
         case SCN_PAINTED:
         case SCN_FOCUSIN:
         case SCN_FOCUSOUT:
+        case SCN_ZOOM:
             break;
 
         default:
@@ -188,6 +225,13 @@ gboolean on_editor_notify(GObject *object, GeanyEditor *editor, SCNotification *
     }
 
     return false;
+}
+
+void show_debug(guint key_id)
+{
+    nothrowLog!"info"(
+        "Import paths:\n"~wrapper.listImportPaths.to!string
+    );
 }
 
 void force_completion(guint key_id)
