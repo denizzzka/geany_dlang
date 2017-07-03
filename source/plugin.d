@@ -56,16 +56,11 @@ void init_keybindings() nothrow
         );
 }
 
-void attemptDisplayCompletionWindow() nothrow
+void addCurrDocumentDirIntoImport(GeanyDocument* doc) nothrow
 {
-    import geany_d_binding.scintilla.types;
-    import geany_d_binding.scintilla.Scintilla;
-    import geany_d_binding.scintilla.ScintillaGTK;
-    import std.string;
+    nothrowLog!"trace"(__FUNCTION__);
 
     static bool[string] importedDirs;
-
-    GeanyDocument* doc = document_get_current();
 
     if(doc != null && doc.file_type.id == GeanyFiletypeID.GEANY_FILETYPES_D)
     {
@@ -74,7 +69,7 @@ void attemptDisplayCompletionWindow() nothrow
         string filename = doc.file_name.to!string;
         string path = dirName(filename);
 
-        if(path !in importedDirs)
+        //~ if((path in importedDirs) !is null)
         {
             try
             {
@@ -88,7 +83,16 @@ void attemptDisplayCompletionWindow() nothrow
                 nothrowLog!"warning"(e.msg);
         }
     }
+}
 
+void attemptDisplayCompletionWindow() nothrow
+{
+    import geany_d_binding.scintilla.types;
+    import geany_d_binding.scintilla.Scintilla;
+    import geany_d_binding.scintilla.ScintillaGTK;
+    import std.string;
+
+    GeanyDocument* doc = document_get_current();
     const res = calculateCompletion(doc);
 
     if(res.completions.length > 0 && res.completionType == CompletionType.identifiers)
@@ -195,7 +199,7 @@ import gtkc.gobjecttypes: GObject;
 import geany_d_binding.geany.editor: GeanyEditor;
 import geany_d_binding.scintilla.Scintilla: SCNotification, Msg;
 
-gboolean on_editor_notify(GObject *object, GeanyEditor *editor, SCNotification *nt, gpointer data)
+gboolean on_editor_notify(GObject* object, GeanyEditor* editor, SCNotification* nt, gpointer data)
 {
     import geany_d_binding.geany.dialogs;
     import gtkc.gtktypes: GtkMessageType;
@@ -225,6 +229,13 @@ gboolean on_editor_notify(GObject *object, GeanyEditor *editor, SCNotification *
     }
 
     return false;
+}
+
+void on_document_filetype_set(GObject* obj, GeanyDocument* doc, GeanyFiletype* filetype_old, gpointer user_data)
+{
+    nothrowLog!"trace"(__FUNCTION__);
+
+    addCurrDocumentDirIntoImport(doc);
 }
 
 void show_debug(guint key_id)
@@ -274,6 +285,7 @@ shared static this()
     callbacks =
     [
         PluginCallback("editor-notify", cast(GCallback) &on_editor_notify, false, null),
+        PluginCallback("document-filetype-set", cast(GCallback) &on_document_filetype_set, true, null),
         PluginCallback(null, null, false, null)
     ];
 }
