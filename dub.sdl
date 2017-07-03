@@ -4,13 +4,16 @@ authors "Denis Feklushkin <denis.feklushkin@gmail.com>"
 copyright "Copyright © 2017, Denis Feklushkin"
 license "GNU"
 dependency "dcd" version="~>0.9.0-beta.1"
+subConfiguration "dcd" "library"
+
+#dependency "dsymbol" version="~>0.2.4"
 
 configuration "default" {
-	dependency "geany_plugin_d_api" version="*"
-	targetType "dynamicLibrary"
+    dependency "geany_d_binding" version="~>0.0.1"
+    targetType "dynamicLibrary"
 }
 
 configuration "integration_test" {
-	targetType "executable"
-	versions "IntegrationTest"
+    targetType "executable"
+    versions "IntegrationTest"
 }
