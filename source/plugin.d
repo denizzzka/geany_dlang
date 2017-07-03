@@ -8,6 +8,10 @@ import std.conv: to;
 import common.messages;
 import geany_d_binding.geany.document;
 import geany_d_binding.geany.filetypes;
+import geany_d_binding.scintilla.types;
+import geany_d_binding.scintilla.Scintilla;
+import geany_d_binding.scintilla.ScintillaGTK;
+import std.string: toStringz;
 
 enum serverStart = "dub run dcd --build=release --config=server";
 private GeanyPlugin* geany_plugin;
@@ -78,76 +82,104 @@ void addCurrDocumentDirIntoImport(GeanyDocument* doc) nothrow
     }
 }
 
-void attemptDisplayCompletionWindow() nothrow
+void attemptDisplaySomeWindow() nothrow
 {
-    import geany_d_binding.scintilla.types;
-    import geany_d_binding.scintilla.Scintilla;
-    import geany_d_binding.scintilla.ScintillaGTK;
-    import std.string;
-
     GeanyDocument* doc = document_get_current();
     const res = calculateCompletion(doc);
 
-    if(res.completions.length > 0 && res.completionType == CompletionType.identifiers)
+    if(res.completions.length > 0)
     {
         const currPos = doc.editor.sci.sci_get_current_position;
 
-        const wordStartPos = cast(size_t) scintilla_send_message(
-                doc.editor.sci,
-                Sci.SCI_WORDSTARTPOSITION,
-                cast(uptr_t) currPos,
-                cast(sptr_t) true
-            );
-
-        const separator = cast(char) scintilla_send_message(
-                doc.editor.sci,
-                Sci.SCI_AUTOCGETSEPARATOR,
-                null,
-                null
-            );
-
-        string preparedList;
-
-        // FIXME: replace by std function
-        foreach(i, ref c; res.completions)
+        with(CompletionType)
+        switch(res.completionType)
         {
-            if(i != 0)
-                preparedList ~= separator;
+            case identifiers:
+                attemptDisplayCompletionWindow(doc, res, currPos);
+                break;
 
-            preparedList ~= c;
+            case calltips:
+                attemptDisplayTipWindow(doc, res.completions, currPos);
+                break;
 
-            switch(res.completionKinds[i])
-            {
-                case 'k':
-                    preparedList ~= "?1";
-                    break;
-
-                case 'v':
-                    preparedList ~= "?2";
-                    break;
-
-                default:
-                    break;
-            }
+            default:
+                nothrowLog!"warning"("Unknown completionType "~res.completionType.to!string);
+                break;
         }
-
-        scintilla_send_message(
-                doc.editor.sci,
-                Sci.SCI_AUTOCSETORDER,
-                cast(uptr_t) Sc.SC_ORDER_PERFORMSORT,
-                null
-            );
-
-        const size_t alreadyEnteredNum = currPos - wordStartPos;
-        nothrowLog!"trace"("alreadyEnteredNum="~alreadyEnteredNum.to!string);
-
-        scintilla_send_message(
-                doc.editor.sci,
-                Sci.SCI_AUTOCSHOW,
-                cast(uptr_t) alreadyEnteredNum,
-                cast(sptr_t) preparedList.toStringz
-            );
     }
+}
+
+void attemptDisplayCompletionWindow(GeanyDocument* doc, in AutocompleteResponse res, int currPos) nothrow
+{
+    const wordStartPos = cast(size_t) scintilla_send_message(
+            doc.editor.sci,
+            Sci.SCI_WORDSTARTPOSITION,
+            cast(uptr_t) currPos,
+            cast(sptr_t) true
+        );
+
+    const separator = cast(char) scintilla_send_message(
+            doc.editor.sci,
+            Sci.SCI_AUTOCGETSEPARATOR,
+            null,
+            null
+        );
+
+    string preparedList;
+
+    foreach(i, ref c; res.completions)
+    {
+        if(i != 0)
+            preparedList ~= separator;
+
+        preparedList ~= c;
+
+        switch(res.completionKinds[i])
+        {
+            case 'k':
+                preparedList ~= "?1";
+                break;
+
+            case 'v':
+                preparedList ~= "?2";
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    scintilla_send_message(
+            doc.editor.sci,
+            Sci.SCI_AUTOCSETORDER,
+            cast(uptr_t) Sc.SC_ORDER_PERFORMSORT,
+            null
+        );
+
+    const size_t alreadyEnteredNum = currPos - wordStartPos;
+    nothrowLog!"trace"("alreadyEnteredNum="~alreadyEnteredNum.to!string);
+
+    scintilla_send_message(
+            doc.editor.sci,
+            Sci.SCI_AUTOCSHOW,
+            cast(uptr_t) alreadyEnteredNum,
+            cast(sptr_t) preparedList.toStringz
+        );
+}
+
+void attemptDisplayTipWindow(GeanyDocument* doc, in string[] tipTexts, int pos) nothrow
+{
+    string str;
+
+    foreach(ref s; tipTexts)
+        str ~= s;
+
+    scintilla_send_message(
+            doc.editor.sci,
+            Sci.SCI_CALLTIPSHOW,
+            cast(uptr_t) pos,
+            cast(sptr_t) str.toStringz
+        );
 }
 
 AutocompleteResponse calculateCompletion(GeanyDocument* doc) nothrow
@@ -202,7 +234,7 @@ gboolean on_editor_notify(GObject* object, GeanyEditor* editor, SCNotification* 
     {
         case SCN_CHARADDED:
             nothrowLog!"trace"("SCN_CHARADDED received");
-            attemptDisplayCompletionWindow();
+            attemptDisplaySomeWindow();
             break;
             //~ return true;
 
@@ -240,7 +272,7 @@ void show_debug(guint key_id)
 
 void force_completion(guint key_id)
 {
-    attemptDisplayCompletionWindow();
+    attemptDisplaySomeWindow();
 }
 
 gboolean initPlugin(GeanyPlugin *plugin, gpointer pdata)
