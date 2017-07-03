@@ -60,8 +60,6 @@ void addCurrDocumentDirIntoImport(GeanyDocument* doc) nothrow
 {
     nothrowLog!"trace"(__FUNCTION__);
 
-    static bool[string] importedDirs;
-
     if(doc != null && doc.file_type.id == GeanyFiletypeID.GEANY_FILETYPES_D)
     {
         import std.path;
@@ -69,19 +67,14 @@ void addCurrDocumentDirIntoImport(GeanyDocument* doc) nothrow
         string filename = doc.file_name.to!string;
         string path = dirName(filename);
 
-        //~ if((path in importedDirs) !is null)
+        try
         {
-            try
-            {
-                nothrowLog!"trace"("Begin adding import path "~path);
+            nothrowLog!"trace"("Begin adding import path "~path);
 
-                wrapper.addImportPaths([path.to!string]);
-
-                importedDirs[path] = true;
-            }
-            catch(Exception e)
-                nothrowLog!"warning"(e.msg);
+            wrapper.addImportPaths([path.to!string]);
         }
+        catch(Exception e)
+            nothrowLog!"warning"(e.msg);
     }
 }
 
