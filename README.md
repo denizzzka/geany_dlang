@@ -1,6 +1,11 @@
 # geany_dlang
 Geany D language support plugin
 
+Features
+-----
+* Autocompletion
+* Arguments tips
+
 Build
 -----
 At first, you should get Geany with GTK3 support.
