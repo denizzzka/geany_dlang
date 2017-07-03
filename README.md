@@ -1,7 +1,7 @@
 # geany_dlang
 Geany D language support plugin
 
-Usage
+Build
 -----
 At first, you should get Geany with GTK3 support.
 Try to find binaries or compile it by yourself:
@@ -22,3 +22,9 @@ sudo cp ~/.dub/packages/geany_dlang-*/geany_dlang/libgeany_dlang.so /usr/local/l
 ```
 
 After this you can start Geany and enable plugin in "Plugin Manager".
+
+Usage
+-----
+Currently plugin conflicts with standard Geany's autocompletion.
+Thus, you should disable autocompletion at all for comfortable working with plugin.
+Also plugin is not respects Geany configurations and autocompletion works always after each key is pressed.
