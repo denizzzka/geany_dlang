@@ -1,6 +1,7 @@
 version(IntegrationTest){} else:
 
-import geany_d_binding.geany;
+import geany_d_binding.geany.plugins;
+import geany_d_binding.geany.types;
 import dcd_wrapper;
 import logger;
 import geany_d_binding.geany.sciwrappers;
