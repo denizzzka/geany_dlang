@@ -26,8 +26,6 @@ dub build --build=release geany_dlang
 sudo cp ~/.dub/packages/geany_dlang-*/geany_dlang/libgeany_dlang.so /usr/local/lib/geany/geany_dlang.so
 ```
 
-DCD configuration
------
 For comfortable working with standard library do not forget to add imports paths to dcd.conf:
 ```
 $ cat ~/.config/dcd/dcd.conf
