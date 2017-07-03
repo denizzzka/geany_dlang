@@ -6,34 +6,24 @@ import logger;
 import common.messages;
 import common.messages: Request = AutocompleteRequest, Response = AutocompleteResponse;
 
-private string[] importPaths;
-
-static this()
-{
-    importPaths = loadConfiguredImportDirs();
-}
-
 class DcdWrapper
 {
     package ModuleCache cache;
 
     this()
     {
+        string[] importPaths = loadConfiguredImportDirs();
+
         cache = ModuleCache(new ASTAllocator);
-        cache.addImportPaths(importPaths);
+        addImportPaths(importPaths);
 
         infof("Import directories:\n    %-(%s\n    %)", cache.getImportPaths());
         info(cache.symbolsAllocated, " symbols cached.");
     }
 
-    void addImport(string pathLine)
+    void addImportPaths(string[] pathLines)
     {
-        importPaths ~= pathLine;
-    }
-
-    const(string)[] listImports() const
-    {
-        return importPaths;
+        cache.addImportPaths(pathLines);
     }
 
     void clearCache()
