@@ -14,7 +14,6 @@ Try to find binaries or compile it by yourself:
 git clone https://github.com/geany/geany.git
 cd geany
 ./autogen.sh --enable-gtk3
-./configure
 make
 make install # as root, or using sudo
 ```
