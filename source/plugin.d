@@ -6,7 +6,7 @@ import dcd_wrapper;
 import logger;
 import geany_d_binding.geany.sciwrappers;
 import std.conv: to;
-import common.messages;
+import dcd.common.messages;
 import geany_d_binding.geany.document;
 import geany_d_binding.geany.filetypes;
 import geany_d_binding.scintilla.types;
@@ -107,7 +107,7 @@ void attemptDisplaySomeWindow() nothrow
                 break;
 
             case calltips:
-                attemptDisplayTipWindow(doc, res.completions, separator, currPos);
+                attemptDisplayTipWindow(doc, res, separator, currPos);
                 break;
 
             default:
@@ -133,9 +133,9 @@ void attemptDisplayCompletionWindow(GeanyDocument* doc, in AutocompleteResponse 
         if(i != 0)
             preparedList ~= separator;
 
-        preparedList ~= c;
+        preparedList ~= c.identifier;
 
-        switch(res.completionKinds[i])
+        switch(c.kind)
         {
             case 'k':
                 preparedList ~= "?1";
@@ -168,16 +168,16 @@ void attemptDisplayCompletionWindow(GeanyDocument* doc, in AutocompleteResponse 
         );
 }
 
-void attemptDisplayTipWindow(GeanyDocument* doc, in string[] tipTexts, char separator, int pos) nothrow
+void attemptDisplayTipWindow(GeanyDocument* doc, in AutocompleteResponse tips, char separator, int pos) nothrow
 {
     string str;
 
-    foreach(i, ref s; tipTexts)
+    foreach(i, ref c; tips.completions)
     {
         if(i != 0)
             str ~= separator;
 
-        str ~= s;
+        str ~= c.definition;
     }
 
     scintilla_send_message(
@@ -205,20 +205,6 @@ AutocompleteResponse calculateCompletion(GeanyDocument* doc) nothrow
         req.sourceCode = cast(ubyte[]) textBuff[0 .. textLen+1];
 
         ret = wrapper.doRequest(req);
-
-        debug
-        {
-            import std.format;
-            import std.string;
-
-            string s = "AutocompleteRequest formatting failed";
-
-            try
-                s = format("%s", ret);
-            catch(Exception){}
-
-            nothrowLog!"trace"(s);
-        }
     }
 
     return ret;

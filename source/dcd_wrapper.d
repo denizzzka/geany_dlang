@@ -1,10 +1,10 @@
 module dcd_wrapper;
 
-import server.server;
+import dcd.server.server;
 import dsymbol.modulecache;
 import logger;
-import common.messages;
-import common.messages: Request = AutocompleteRequest, Response = AutocompleteResponse;
+import dcd.common.messages;
+import dcd.common.messages: Request = AutocompleteRequest, Response = AutocompleteResponse;
 
 class DcdWrapper
 {
@@ -45,7 +45,7 @@ class DcdWrapper
 
     Response doRequest(Request request) nothrow
     {
-        import server.autocomplete;
+        import dcd.server.autocomplete;
         import std.conv: to;
 
         nothrowLog!"info"("Do request. kind = "~request.kind.to!string);
