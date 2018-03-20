@@ -14,7 +14,6 @@ import geany_d_binding.scintilla.Scintilla;
 import geany_d_binding.scintilla.ScintillaGTK;
 import std.string: toStringz;
 
-enum serverStart = "dub run dcd --build=release --config=server";
 private GeanyPlugin* geany_plugin;
 private DcdWrapper wrapper;
 
