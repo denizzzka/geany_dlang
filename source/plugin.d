@@ -314,7 +314,7 @@ void geany_load_module(GeanyPlugin *plugin)
 
     plugin.info.name = "D language";
     plugin.info.description = "Adds D language support";
-    plugin.info._version = "0.0.1";
+    plugin.info._version = "0.0.3"; //TODO: fill out automatically
     plugin.info.author = "Denis Feklushkin <denis.feklushkin@gmail.com>";
 
     try

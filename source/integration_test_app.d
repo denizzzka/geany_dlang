@@ -1,16 +1,18 @@
 version(IntegrationTest):
 
 import dcd_wrapper;
-import common.messages;
+import dcd.common.messages;
 import std.stdio;
 import std.file: readText;
 import std.conv: to;
+import std.algorithm.searching: canFind;
 
 void main()
 {
     ubyte[] code = cast(ubyte[]) readText!(char[])("test_file.d");
 
     auto w = new DcdWrapper();
+    scope(exit) destroy(w);
 
     {
         AutocompleteRequest req;
@@ -22,7 +24,8 @@ void main()
 
         writeln(ret);
 
-        assert(ret.docComments == ["Main function\\n\\nThis function used for integration testing\\n\\nParams:\\n\\nargs = command line arguments\\n\\nReturns:\\n\\nAlways returns zero"]);
+        assert(ret.completions.length == 1);
+        assert(ret.completions[0].documentation.canFind("This function used for integration testing"));
     }
 
     {
@@ -34,10 +37,8 @@ void main()
         auto ret = w.doRequest(req);
         writeln(ret);
 
-        import std.algorithm.searching: canFind;
-        assert(canFind(ret.completions, "First"));
-        assert(canFind(ret.completions, "Second"));
+        assert(ret.completions.length >= 2);
+        assert(ret.completions[$-2].identifier == "First");
+        assert(ret.completions[$-1].identifier == "Second");
     }
-
-    destroy(w);
 }
