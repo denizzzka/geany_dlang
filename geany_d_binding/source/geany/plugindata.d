@@ -3,7 +3,7 @@ module geany_d_binding.geany.plugindata;
 import geany_d_binding.geany.types;
 import gtkc.gobjecttypes: GCallback;
 
-enum GEANY_API_VERSION = 231;
+enum GEANY_API_VERSION = 239;
 private const ubyte GEANY_ABI_SHIFT;
 const uint GEANY_ABI_VERSION;
 
