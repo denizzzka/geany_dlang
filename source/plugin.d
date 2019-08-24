@@ -43,10 +43,9 @@ void init_keybindings() nothrow
             KEY,
             cast(GdkModifierType) 0,
             "exec",
-            "Complete code",
+            "Display autocompletion dialog",
             null // GtkWidget*
         );
-
 
     keybindings_set_item(
             key_group,
