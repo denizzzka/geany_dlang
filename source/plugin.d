@@ -283,7 +283,7 @@ gboolean initPlugin(GeanyPlugin *plugin, gpointer pdata)
     return true;
 }
 
-void cleanupPlugin(GeanyPlugin *plugin, gpointer pdata)
+void cleanupPlugin(GeanyPlugin* plugin, gpointer pdata)
 {
     try
         destroy(wrapper);
@@ -305,11 +305,41 @@ shared static this()
     ];
 }
 
+import gtk.Widget: GtkWidget, GtkDialog;
+
+GtkWidget* configureHandler(GeanyPlugin* plugin, GtkDialog* dialog, gpointer pdata)
+{
+    import gtk.c.functions;
+    import gtk.VBox;
+    import gtk.Label;
+
+    /* example configuration dialog */
+    //~ GtkVBox* vboxPtr = gtk_vbox_new(false, 6);
+    try
+    {
+        auto vbox = new VBox(false, 6);
+        vbox.add(new Label("Welcome text to show:"));
+        vbox.showAll;
+
+        return cast(GtkWidget*) vbox.getVBoxStruct;
+    }
+    catch(Exception e)
+    {
+        nothrowLog!"fatal"(e.msg);
+
+        return null;
+    }
+
+    /* Connect a callback for when the user clicks a dialog button */
+    //~ g_signal_connect(dialog, "response", G_CALLBACK(on_configure_response), entry);
+}
+
 void geany_load_module(GeanyPlugin *plugin)
 {
     plugin.funcs._init = &initPlugin;
     plugin.funcs.cleanup = &cleanupPlugin;
     plugin.funcs.callbacks = &callbacks[0];
+    plugin.funcs.configure = &configureHandler;
 
     plugin.info.name = "D language";
     plugin.info.description = "Adds D language support";
