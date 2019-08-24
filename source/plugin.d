@@ -43,7 +43,7 @@ void init_keybindings() nothrow
             KEY,
             cast(GdkModifierType) 0,
             "exec",
-            "complete",
+            "Complete code",
             null // GtkWidget*
         );
 
@@ -55,7 +55,7 @@ void init_keybindings() nothrow
             KEY,
             cast(GdkModifierType) 0,
             "exec 2",
-            "show debug",
+            "Dump debug info into console",
             null // GtkWidget*
         );
 }
@@ -314,7 +314,7 @@ void geany_load_module(GeanyPlugin *plugin)
 
     plugin.info.name = "D language";
     plugin.info.description = "Adds D language support";
-    plugin.info._version = "0.0.5"; //TODO: fill out automatically
+    plugin.info._version = "0.x.x"; //TODO: fill out automatically
     plugin.info.author = "Denis Feklushkin <denis.feklushkin@gmail.com>";
 
     try
