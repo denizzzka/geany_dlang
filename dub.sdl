@@ -6,10 +6,8 @@ license "GNU"
 dependency "dcd" version="~>0.11.1"
 subConfiguration "dcd" "library"
 
-#dependency "dsymbol" version="~>0.2.4"
-
 configuration "default" {
-    dependency "geany_d_binding" version="~>0.0.4"
+    dependency ":geany_d_binding" version="*"
     targetType "dynamicLibrary"
 }
 
@@ -17,3 +15,5 @@ configuration "integration_test" {
     targetType "executable"
     versions "IntegrationTest"
 }
+
+subPackage "geany_d_binding"
