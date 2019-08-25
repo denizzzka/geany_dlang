@@ -47,6 +47,7 @@ class DcdWrapper
     {
         import dcd.server.autocomplete;
         import std.conv: to;
+        import std.exception;
 
         nothrowLog!"info"("Do request. kind = "~request.kind.to!string);
 
@@ -90,7 +91,7 @@ class DcdWrapper
                     break;
 
                 default:
-                    assert(false, "Unsupported request kind");
+                    throw new Exception("Unsupported request kind");
             }
         }
         catch(Exception e)

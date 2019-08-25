@@ -8,17 +8,23 @@ import logger: nothrowLog;
 extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dialogPtr, gpointer pdata) nothrow
 {
     import gtk.VBox;
+    import gtk.CheckButton;
     import gtk.Label;
     import gtk.Dialog;
     import gobject.Signals;
 
     try
     {
-        auto vbox = new VBox(false, 6);
-        vbox.add(new Label("Capture SCN_CHARADDED editor event"));
+        auto vbox = new VBox(false, 4);
         auto eventsExplanation = new Label(`Geany does not support capture of built-in autocompletion events. This plugin can use "char added" event to imitate of autocompletion events, but you will need to disable the built-in standard autocompletion in Geany preferences.`);
         eventsExplanation.setLineWrap(true);
         vbox.add(eventsExplanation);
+        vbox.add(new CheckButton("Capture SCN_CHARADDED editor event"));
+
+        vbox.add(new Label("Additional sources paths to scan:"));
+        auto additionalSourcesList = new SrcDirsTreeView(new SrcDirsListStore);
+        vbox.add(additionalSourcesList);
+
         vbox.showAll;
 
         auto dialog = new Dialog(dialogPtr);
@@ -51,4 +57,35 @@ void on_configure_response()
          //~ * geany->app->configdir G_DIR_SEPARATOR_S plugins G_DIR_SEPARATOR_S pluginname G_DIR_SEPARATOR_S
          //~ * e.g. this could be: ~/.config/geany/plugins/Demo/, please use geany->app->configdir */
     //~ }
+}
+
+import gtk.ListStore;
+
+class SrcDirsListStore : ListStore
+{
+    this()
+    {
+        super([GType.BOOLEAN, GType.STRING]);
+    }
+}
+
+import gtk.TreeView;
+
+class SrcDirsTreeView : TreeView
+{
+    import gtk.TreeViewColumn;
+    import gtk.CellRendererText;
+
+    this(SrcDirsListStore list)
+    {
+        auto col = new TreeViewColumn;
+        col.setTitle("Enabled");
+        appendColumn(col);
+
+        col = new TreeViewColumn;
+        col.setTitle("Path");
+        appendColumn(col);
+
+        setModel(list);
+    }
 }
