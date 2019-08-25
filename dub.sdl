@@ -4,6 +4,7 @@ authors "Denis Feklushkin <denis.feklushkin@gmail.com>"
 copyright "Copyright © 2017, Denis Feklushkin"
 license "GNU"
 dependency "dyaml" version="~>0.8.0"
+dependency "yamlserialized" version="~>0.4.0"
 dependency "dcd" version="~>0.11.1"
 subConfiguration "dcd" "library"
 

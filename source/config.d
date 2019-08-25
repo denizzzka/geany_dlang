@@ -2,8 +2,6 @@ module geany_dlang.config;
 
 @safe:
 
-import dyaml;
-
 struct Config
 {
     bool useCharAddEvent;
@@ -35,12 +33,14 @@ Config establishCfg(in GeanyData* geany_data)
 private Config loadConf(string filename) {
     import std.file;
     import std.conv;
+    import dyaml;
+    import yamlserialized;
 
-    auto buf = /*cast(ubyte[])*/ readText(filename);
+    auto buf = readText(filename).to!(ubyte[]);
 
     Config ret;
 
-    Loader.fromBuffer(buf).load.deserializeInto(ret);
+    Loader.fromBuffer(buf).load().deserializeInto(ret);
 
     return ret;
 }
