@@ -34,16 +34,17 @@ class ConfigFile
 
         filepath = buildPath(dir, "dlang_plugin.conf");
 
-        Config ret;
-
-        nothrowLog!"info"("Open file "~filepath);
+        nothrowLog!"info"("Config file is "~filepath);
 
         if(!filepath.exists)
         {
             filepath.append(""); // creates empty config file
+            config = Config(); // default config will be used
         }
-
-        config = filepath.loadConf;
+        else
+        {
+            config = filepath.loadConf;
+        }
     }
 
     ~this()
@@ -70,12 +71,7 @@ private Config loadConf(string filename)
 
     Config ret;
 
-    try
-        Loader.fromBuffer(buf).load().deserializeInto(ret);
-    catch(Exception e)
-    {
-        ret = Config(); // ignore broken config
-    }
+    Loader.fromBuffer(buf).load().deserializeInto(ret);
 
     return ret;
 }

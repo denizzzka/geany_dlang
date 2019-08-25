@@ -4,7 +4,7 @@ import gtk.Widget: GtkWidget, GtkDialog;
 import geany_d_binding.geany.plugins;
 import geany_d_binding.geany.types;
 import logger: nothrowLog;
-import geany_dlang.config;
+import geany_dlang.plugin: configFile;
 
 extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dialogPtr, gpointer pdata) nothrow
 {
