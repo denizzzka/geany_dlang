@@ -57,7 +57,8 @@ class ConfigFile
 
         auto root = config.toYAMLNode;
 
-        //~ dumper().dump(File(filepath, "w").lockingTextWriter, root);
+        auto dumper = dumper();
+        dumper.dump(File(filepath, "w").lockingTextWriter, root);
     }
 }
 
