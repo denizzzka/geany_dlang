@@ -305,10 +305,10 @@ shared static this()
     ];
 }
 
-import geany_dlang.config_window: configWindowDialog;
-
 void geany_load_module(GeanyPlugin *plugin)
 {
+    import geany_dlang.config_window: configWindowDialog;
+
     plugin.funcs._init = &initPlugin;
     plugin.funcs.cleanup = &cleanupPlugin;
     plugin.funcs.callbacks = &callbacks[0];
