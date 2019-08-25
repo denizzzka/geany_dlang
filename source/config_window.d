@@ -7,6 +7,7 @@ import logger: nothrowLog;
 
 extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dialogPtr, gpointer pdata) nothrow
 {
+    import geany_dlang.config;
     import gtk.VBox;
     import gtk.CheckButton;
     import gtk.Label;
@@ -15,6 +16,8 @@ extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dia
 
     try
     {
+        Config cfg = establishCfg();
+
         auto vbox = new VBox(false, 4);
         auto eventsExplanation = new Label(`Geany does not support capture of built-in autocompletion events. This plugin can use "char added" event to imitate of autocompletion events, but you will need to disable the built-in standard autocompletion in Geany preferences.`);
         eventsExplanation.setLineWrap(true);
