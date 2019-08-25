@@ -1,5 +1,11 @@
 module geany_dlang.config;
 
+import logger;
+import std.file;
+import std.conv;
+import dyaml;
+import yamlserialized;
+
 @safe:
 
 struct Config
@@ -10,42 +16,65 @@ struct Config
 
 import geany_d_binding.geany.plugindata: GeanyData; 
 
-Config establishCfg(in GeanyData* geany_data)
+class ConfigFile
 {
-    import std.path;
-    import std.file;
-    import std.conv: to;
+    private string filepath;
+    Config config;
 
-    string confDir;
-
-    () @trusted { confDir = geany_data.app.configdir.to!string; }();
-
-    const dir = buildPath(confDir, "plugins", "dlang_plugin");
-    dir.mkdirRecurse;
-
-    const filepath = buildPath(dir, "dlang_plugin.conf");
-
-    Config ret;
-
-    if(!filepath.exists)
+    this(in GeanyData* geany_data)
     {
-        filepath.write("AAAAA bbb ccc");
+        import std.path;
+
+        string confDir;
+
+        () @trusted { confDir = geany_data.app.configdir.to!string; }();
+
+        const dir = buildPath(confDir, "plugins", "dlang_plugin");
+        dir.mkdirRecurse;
+
+        filepath = buildPath(dir, "dlang_plugin.conf");
+
+        Config ret;
+
+        nothrowLog!"info"("Open file "~filepath);
+
+        if(!filepath.exists)
+        {
+            filepath.append(""); // creates empty config file
+        }
+
+        config = filepath.loadConf;
     }
 
-    return filepath.loadConf;
+    ~this()
+    {
+        saveConf();
+    }
+
+    void saveConf()
+    {
+        import std.stdio: File;
+
+        auto root = config.toYAMLNode;
+
+        //~ dumper().dump(File(filepath, "w").lockingTextWriter, root);
+    }
 }
 
-private Config loadConf(string filename) {
-    import std.file;
-    import std.conv;
-    import dyaml;
-    import yamlserialized;
+private Config loadConf(string filename)
+{
+    ubyte[] buf;
 
-    auto buf = readText(filename).to!(ubyte[]);
+    () @trusted { buf = cast(ubyte[]) readText(filename); }();
 
     Config ret;
 
-    Loader.fromBuffer(buf).load().deserializeInto(ret);
+    try
+        Loader.fromBuffer(buf).load().deserializeInto(ret);
+    catch(Exception e)
+    {
+        ret = Config(); // ignore broken config
+    }
 
     return ret;
 }
