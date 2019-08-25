@@ -14,8 +14,6 @@ void nothrowLog
 )
 (lazy string msg) nothrow
 {
-    import std.experimental.logger;
-
     try
     {
         static if(S == "trace")
