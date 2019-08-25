@@ -15,7 +15,9 @@ extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dia
     {
         auto vbox = new VBox(false, 6);
         vbox.add(new Label("Capture SCN_CHARADDED editor event"));
-        vbox.add(new Label(`Geany does not support capture of built-in autocompletion events. This plugin can use "char added" event to imitate of autocompletion events, but you will need to disable the built-in standard autocompletion in Geany preferences.`));
+        auto eventsExplanation = new Label(`Geany does not support capture of built-in autocompletion events. This plugin can use "char added" event to imitate of autocompletion events, but you will need to disable the built-in standard autocompletion in Geany preferences.`);
+        eventsExplanation.setLineWrap(true);
+        vbox.add(eventsExplanation);
         vbox.showAll;
 
         return cast(GtkWidget*) vbox.getVBoxStruct;
