@@ -1,8 +1,11 @@
+module geany_dlang.plugin;
+
 version(IntegrationTest){} else:
 
 import geany_d_binding.geany.plugins;
 import geany_d_binding.geany.types;
 import dcd_wrapper;
+import geany_dlang.config: ConfigFile;
 import logger;
 import geany_d_binding.geany.sciwrappers;
 import std.conv: to;
@@ -16,6 +19,7 @@ import std.string: toStringz;
 
 private GeanyPlugin* geany_plugin;
 private DcdWrapper wrapper;
+ConfigFile configFile;
 
 void init_keybindings() nothrow
 {
@@ -270,7 +274,10 @@ gboolean initPlugin(GeanyPlugin *plugin, gpointer pdata)
     geany_plugin = plugin;
 
     try
+    {
         wrapper = new DcdWrapper();
+        configFile = new ConfigFile(plugin.geany_data);
+    }
     catch(Exception e)
     {
         nothrowLog!"fatal"(e.msg);
@@ -286,7 +293,10 @@ gboolean initPlugin(GeanyPlugin *plugin, gpointer pdata)
 void cleanupPlugin(GeanyPlugin* plugin, gpointer pdata)
 {
     try
+    {
         destroy(wrapper);
+        destroy(configFile);
+    }
     catch(Exception e)
         nothrowLog!"fatal"(e.msg);
 }

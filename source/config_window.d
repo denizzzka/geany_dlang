@@ -6,8 +6,6 @@ import geany_d_binding.geany.types;
 import logger: nothrowLog;
 import geany_dlang.config;
 
-private ConfigFile configFile;
-
 extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dialogPtr, gpointer pdata) nothrow
 {
     import geany_dlang.config;
@@ -19,8 +17,6 @@ extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dia
 
     try
     {
-        configFile = new ConfigFile(plugin.geany_data);
-
         auto vbox = new VBox(false, 4);
         auto eventsExplanation = new Label(`Geany does not support capture of built-in autocompletion events. This plugin can use "char added" event to imitate of autocompletion events, but you will need to disable the built-in standard autocompletion in Geany preferences.`);
         eventsExplanation.setLineWrap(true);
@@ -50,6 +46,7 @@ void on_configure_response()
 {
     nothrowLog!"trace"("Button pressed");
 
+    import geany_dlang.plugin: configFile;
     configFile.saveConf();
     //~ /* catch OK or Apply clicked */
     //~ if (response == GTK_RESPONSE_OK || response == GTK_RESPONSE_APPLY)
