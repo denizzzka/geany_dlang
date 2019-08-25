@@ -21,6 +21,8 @@ extern(System) @nogc nothrow
         const(gchar)* author;
     }
 
+    import geany_d_binding.geany.plugindata: GeanyData;
+
     /** Basic information for the plugin and identification. */
     struct GeanyPlugin
     {
@@ -63,7 +65,6 @@ extern(System) @nogc nothrow
         gpointer    user_data;
     }
 
-    struct GeanyData;
     struct GeanyProxyFuncs;
     struct GeanyPluginPrivate;
 

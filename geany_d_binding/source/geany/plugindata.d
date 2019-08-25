@@ -23,6 +23,42 @@ shared static this()
 
 extern(System) @nogc nothrow:
 
+import geany_d_binding.geany.app: GeanyApp;
+
+/** This contains pointers to global variables owned by Geany for plugins to use.
+ * Core variable pointers can be appended when needed by plugin authors, if appropriate. */
+struct GeanyData
+{
+    GeanyApp				*app;				/**< Geany application data fields */
+    GeanyMainWidgets		*main_widgets;		/**< Important widgets in the main window */
+    GPtrArray					*documents_array;
+    GPtrArray					*filetypes_array;
+    GeanyPrefs			*prefs;				/**< General settings */
+    GeanyInterfacePrefs	*interface_prefs;	/**< Interface settings */
+    GeanyToolbarPrefs	*toolbar_prefs;		/**< Toolbar settings */
+    GeanyEditorPrefs		*editor_prefs;		/**< Editor settings */
+    GeanyFilePrefs		*file_prefs;		/**< File-related settings */
+    GeanySearchPrefs		*search_prefs;		/**< Search-related settings */
+    GeanyToolPrefs		*tool_prefs;		/**< Tool settings */
+    GeanyTemplatePrefs	*template_prefs;	/**< Template settings */
+    gpointer					*_compat;			/* Remove field on next ABI break (abi-todo) */
+    GSList						*filetypes_by_title;
+    GObject						*object;
+}
+
+struct GeanyMainWidgets;
+struct GPtrArray;
+struct GeanyPrefs;
+struct GeanyInterfacePrefs;
+struct GeanyToolbarPrefs;
+struct GeanyEditorPrefs;
+struct GeanyFilePrefs;
+struct GeanySearchPrefs;
+struct GeanyToolPrefs;
+struct GeanyTemplatePrefs;
+struct GSList; //TODO
+struct GObject; //TODO
+
 /** Callback array entry type used with the @ref plugin_callbacks symbol. */
 struct PluginCallback
 {
