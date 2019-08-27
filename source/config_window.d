@@ -70,6 +70,12 @@ void on_configure_response()
 
 import gtk.ListStore;
 
+private enum
+{
+    COLUMN_ENABLED,
+    COLUMN_PATH,
+}
+
 class SrcDirsListStore : ListStore
 {
     this()
@@ -80,11 +86,11 @@ class SrcDirsListStore : ListStore
     void addPath(string path)
     {
         import gtk.TreeIter;
-        import gobject.Value;
+        //~ import gobject.Value;
 
         TreeIter iterator = createIter();
-        setValue(iterator, 0, new Value(true));
-        setValue(iterator, 1, new Value(path));
+        setValue(iterator, COLUMN_ENABLED, true);
+        setValue(iterator, COLUMN_PATH, path);
     }
 }
 
@@ -105,6 +111,10 @@ class SrcDirsTreeView : TreeView
 
         col = new TreeViewColumn;
         col.setTitle("Path");
+        auto render = new CellRendererText;
+        render.setProperty("editable", CellRendererText);
+        col.addAttribute(render, "text", COLUMN_PATH);
+        col.addAttribute(render, "visible", COLUMN_PATH);
         appendColumn(col);
 
         list = new SrcDirsListStore;
