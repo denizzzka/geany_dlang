@@ -9,34 +9,30 @@ import geany_dlang.plugin: configFile;
 extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dialogPtr, gpointer pdata) nothrow
 {
     import geany_dlang.config;
-    import gtk.VBox;
-    import gtk.CheckButton;
-    import gtk.Label;
+    import gtk.Builder;
+    import gtk.Box;
+    import gtk.TreeView;
     import gtk.Dialog;
     import gobject.Signals;
 
     try
     {
-        auto vbox = new VBox(false, 4);
-        auto eventsExplanation = new Label(`Geany does not support capture of built-in autocompletion events. This plugin can use "char added" event to imitate of autocompletion events, but you will need to disable the built-in standard autocompletion in Geany preferences.`);
-        eventsExplanation.setLineWrap(true);
-        vbox.add(eventsExplanation);
-        vbox.add(new CheckButton("Capture SCN__CHARADDED editor event"));
+        immutable guiDescr = import("preferences.glade");
+        auto builder = new Builder();
+        builder.addFromString(guiDescr);
 
-        vbox.add(new Label("Additional sources paths to scan:"));
-        auto dirsList = new SrcDirsTreeView;
+        auto list = cast(ListStore) builder.getObject("dir_list_store");
 
         foreach(_; 0 .. 10)
-            dirsList.list.addPath("test path");
+            list.addPath("test path");
 
-        vbox.add(dirsList);
-
-        vbox.showAll;
+        auto box = cast(Box) builder.getObject("main_box");
+        box.showAll;
 
         auto dialog = new Dialog(dialogPtr);
         Signals.connect(dialog, "response", &on_configure_response);
 
-        return cast(GtkWidget*) vbox.getVBoxStruct;
+        return cast(GtkWidget*) box.getBoxStruct;
     }
     catch(Exception e)
     {
@@ -76,48 +72,13 @@ private enum
     COLUMN_PATH,
 }
 
-class SrcDirsListStore : ListStore
+void addPath(ListStore list, string path)
 {
-    this()
-    {
-        super([GType.BOOLEAN, GType.STRING]);
-    }
+    import gtk.TreeIter;
 
-    void addPath(string path)
-    {
-        import gtk.TreeIter;
-        //~ import gobject.Value;
+    //~ import gobject.Value;
 
-        TreeIter iterator = createIter();
-        setValue(iterator, COLUMN_ENABLED, true);
-        setValue(iterator, COLUMN_PATH, path);
-    }
-}
-
-import gtk.TreeView;
-
-class SrcDirsTreeView : TreeView
-{
-    import gtk.TreeViewColumn;
-    import gtk.CellRendererText;
-
-    SrcDirsListStore list;
-
-    this()
-    {
-        auto col = new TreeViewColumn;
-        col.setTitle("Enabled");
-        appendColumn(col);
-
-        col = new TreeViewColumn;
-        col.setTitle("Path");
-        auto render = new CellRendererText;
-        render.setProperty("editable", CellRendererText);
-        col.addAttribute(render, "text", COLUMN_PATH);
-        col.addAttribute(render, "visible", COLUMN_PATH);
-        appendColumn(col);
-
-        list = new SrcDirsListStore;
-        setModel(list);
-    }
+    TreeIter iterator = list.createIter();
+    //~ setValue(iterator, COLUMN_ENABLED, true);
+    list.setValue(iterator, COLUMN_PATH, path);
 }
