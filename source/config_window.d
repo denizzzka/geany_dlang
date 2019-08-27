@@ -14,6 +14,8 @@ extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dia
     import gtk.Label;
     import gtk.Dialog;
     import gobject.Signals;
+    import gobject.Value;
+    import gobject.ValueArray;
 
     try
     {
@@ -24,8 +26,10 @@ extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dia
         vbox.add(new CheckButton("Capture SCN_CHARADDED editor event"));
 
         vbox.add(new Label("Additional sources paths to scan:"));
-        auto additionalSourcesList = new SrcDirsTreeView(new SrcDirsListStore);
-        vbox.add(additionalSourcesList);
+        auto dirsList = new SrcDirsTreeView;
+        dirsList.list.addPath("test path");
+        dirsList.list.addPath("test path 2");
+        vbox.add(dirsList);
 
         vbox.showAll;
 
@@ -72,6 +76,15 @@ class SrcDirsListStore : ListStore
     {
         super([GType.BOOLEAN, GType.STRING]);
     }
+
+    void addPath(string path)
+    {
+        import gtk.TreeIter;
+
+        TreeIter iterator = createIter();
+        setValue(iterator, 0, true);
+        setValue(iterator, 1, path);
+    }
 }
 
 import gtk.TreeView;
@@ -81,7 +94,9 @@ class SrcDirsTreeView : TreeView
     import gtk.TreeViewColumn;
     import gtk.CellRendererText;
 
-    this(SrcDirsListStore list)
+    SrcDirsListStore list;
+
+    this()
     {
         auto col = new TreeViewColumn;
         col.setTitle("Enabled");
@@ -91,6 +106,7 @@ class SrcDirsTreeView : TreeView
         col.setTitle("Path");
         appendColumn(col);
 
+        list = new SrcDirsListStore;
         setModel(list);
     }
 }

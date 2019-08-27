@@ -52,7 +52,7 @@ void nothrowLog
 {
     import std.conv: to;
 
-    string msg = e.file~':'~e.line.to!string~':'~e.msg;
+    string msg = e.file~':'~e.line.to!string~':'~e.msg~"\nStack trace:\n"~e.info;
 
     try
     {

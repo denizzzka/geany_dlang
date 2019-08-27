@@ -18,7 +18,7 @@ import geany_d_binding.scintilla.ScintillaGTK;
 import std.string: toStringz;
 
 private GeanyPlugin* geany_plugin;
-private DcdWrapper wrapper;
+package DcdWrapper wrapper;
 ConfigFile configFile;
 
 void init_keybindings() nothrow
