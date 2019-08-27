@@ -51,8 +51,9 @@ void nothrowLog
 (Exception e) nothrow
 {
     import std.conv: to;
+    import std.exception: assumeWontThrow;
 
-    string msg = e.file~':'~e.line.to!string~':'~e.msg~"\nStack trace:\n"~e.info;
+    string msg = e.file~':'~e.line.to!string~':'~e.msg~"\nStack trace:\n"~assumeWontThrow(e.info.to!string);
 
     try
     {
