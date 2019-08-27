@@ -14,8 +14,6 @@ extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dia
     import gtk.Label;
     import gtk.Dialog;
     import gobject.Signals;
-    import gobject.Value;
-    import gobject.ValueArray;
 
     try
     {
@@ -27,8 +25,10 @@ extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dia
 
         vbox.add(new Label("Additional sources paths to scan:"));
         auto dirsList = new SrcDirsTreeView;
-        dirsList.list.addPath("test path");
-        dirsList.list.addPath("test path 2");
+
+        foreach(_; 0 .. 10)
+            dirsList.list.addPath("test path");
+
         vbox.add(dirsList);
 
         vbox.showAll;
@@ -80,10 +80,11 @@ class SrcDirsListStore : ListStore
     void addPath(string path)
     {
         import gtk.TreeIter;
+        import gobject.Value;
 
         TreeIter iterator = createIter();
-        setValue(iterator, 0, true);
-        setValue(iterator, 1, path);
+        setValue(iterator, 0, new Value(true));
+        setValue(iterator, 1, new Value(path));
     }
 }
 
