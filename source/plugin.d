@@ -58,7 +58,7 @@ void init_keybindings() nothrow
             KEY,
             cast(GdkModifierType) 0,
             "exec 2",
-            "Dump debug info into console",
+            "Dump debug info into log",
             null // GtkWidget*
         );
 }
@@ -220,6 +220,12 @@ import geany_d_binding.scintilla.Scintilla: SCNotification, Msg;
 
 gboolean on_editor_notify(GObject* object, GeanyEditor* editor, SCNotification* nt, gpointer data)
 {
+    return configFile.config.useCharAddEvent ?
+        processEditorNotify(object, nt) : false;
+}
+
+private gboolean processEditorNotify(GObject* object, SCNotification* nt)
+{
     import geany_d_binding.geany.dialogs;
     import gtkc.gtktypes: GtkMessageType;
 
@@ -229,8 +235,7 @@ gboolean on_editor_notify(GObject* object, GeanyEditor* editor, SCNotification* 
         case SCN_CHARADDED:
             nothrowLog!"trace"("SCN_CHARADDED received");
             attemptDisplaySomeWindow();
-            break;
-            //~ return true;
+            return true;
 
         case SCN_KEY:
         case SCN_UPDATEUI:

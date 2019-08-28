@@ -46,7 +46,7 @@
                   <object class="GtkLabel" id="label2">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Geany does not support capture of built-in autocompletion events. This plugin can use "char added" event to imitate of autocompletion events, but you will need to disable the built-in standard autocompletion in Geany preferences.</property>
+                    <property name="label" translatable="yes">Geany does not support capture of built-in autocompletion events. This plugin can use "char added" event to imitate of autocompletion events, but this can be annoying because completion routine will be activated every time as any symbol is added.</property>
                     <property name="wrap">True</property>
                   </object>
                   <packing>
