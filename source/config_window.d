@@ -5,11 +5,11 @@ import geany_d_binding.geany.plugins;
 import geany_d_binding.geany.types;
 import logger: nothrowLog;
 import geany_dlang.plugin: configFile;
+import gtk.Builder;
 
 extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dialogPtr, gpointer pdata) nothrow
 {
     import geany_dlang.config;
-    import gtk.Builder;
     import gtk.Box;
     import gtk.TreeView;
     import gtk.Dialog;
@@ -26,11 +26,26 @@ extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dia
         foreach(_; 0 .. 10)
             list.addPath("test path");
 
+        fillPrefsFromConfig(builder);
+
         auto box = cast(Box) builder.getObject("main_box");
         box.showAll;
 
+        void on_configure_response(int response, Dialog d)
+        {
+            const r = cast(GtkResponseType) response;
+
+            if (r == GtkResponseType.OK || r == GtkResponseType.APPLY)
+            {
+                nothrowLog!"trace"("Save config");
+
+                savePrefsToConfig(builder);
+                configFile.saveConf();
+            }
+        }
+
         auto dialog = new Dialog(dialogPtr);
-        Signals.connect(dialog, "response", &on_configure_response);
+        dialog.addOnResponse(&on_configure_response);
 
         return cast(GtkWidget*) box.getBoxStruct;
     }
@@ -40,28 +55,6 @@ extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dia
 
         return null;
     }
-}
-
-void on_configure_response()
-{
-    nothrowLog!"trace"("Button pressed");
-
-    import geany_dlang.plugin: configFile;
-    configFile.saveConf();
-    //~ /* catch OK or Apply clicked */
-    //~ if (response == GTK_RESPONSE_OK || response == GTK_RESPONSE_APPLY)
-    //~ {
-        //~ /* We only have one pref here, but for more you would use a struct for user_data */
-        //~ GtkWidget *entry = GTK_WIDGET(user_data);
-
-        //~ g_free(welcome_text);
-        //~ welcome_text = g_strdup(gtk_entry_get_text(GTK_ENTRY(entry)));
-        //~ /* maybe the plugin should write here the settings into a file
-         //~ * (e.g. using GLib's GKeyFile API)
-         //~ * all plugin specific files should be created in:
-         //~ * geany->app->configdir G_DIR_SEPARATOR_S plugins G_DIR_SEPARATOR_S pluginname G_DIR_SEPARATOR_S
-         //~ * e.g. this could be: ~/.config/geany/plugins/Demo/, please use geany->app->configdir */
-    //~ }
 }
 
 import gtk.ListStore;
@@ -81,4 +74,18 @@ void addPath(ListStore list, string path)
     TreeIter iterator = list.createIter();
     //~ setValue(iterator, COLUMN_ENABLED, true);
     list.setValue(iterator, COLUMN_PATH, path);
+}
+
+import gtk.ToggleButton;
+
+private void fillPrefsFromConfig(Builder b)
+{
+    auto checkbox = cast(ToggleButton) b.getObject("capture_charadded_checkbox");
+    checkbox.setActive = configFile.config.useCharAddEvent;
+}
+
+private void savePrefsToConfig(Builder b)
+{
+    auto checkbox = cast(ToggleButton) b.getObject("capture_charadded_checkbox");
+    configFile.config.useCharAddEvent = checkbox.getActive;
 }

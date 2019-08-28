@@ -11,7 +11,7 @@ import yamlserialized;
 struct Config
 {
     bool useCharAddEvent;
-    string[] addtitionalPaths;
+    string[] additionalPaths;
 }
 
 import geany_d_binding.geany.plugindata: GeanyData; 
