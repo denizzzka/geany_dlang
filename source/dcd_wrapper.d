@@ -26,6 +26,11 @@ class DcdWrapper
         cache.addImportPaths(pathLines);
     }
 
+    void removeImportPaths(in string[] pathLines)
+    {
+        cache.removeImportPaths(const string[] pathLines)
+    }
+
     string listImportPaths()
     {
         auto g = cache.getImportPaths();
