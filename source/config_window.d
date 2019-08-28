@@ -78,14 +78,17 @@ void addPath(ListStore list, string path)
 
 import gtk.ToggleButton;
 
+private auto getCharAddCheckBox(Builder b)
+{
+    return cast(ToggleButton) b.getObject("capture_charadded_checkbox");
+}
+
 private void fillPrefsFromConfig(Builder b)
 {
-    auto checkbox = cast(ToggleButton) b.getObject("capture_charadded_checkbox");
-    checkbox.setActive = configFile.config.useCharAddEvent;
+    b.getCharAddCheckBox.setActive = configFile.config.useCharAddEvent;
 }
 
 private void savePrefsToConfig(Builder b)
 {
-    auto checkbox = cast(ToggleButton) b.getObject("capture_charadded_checkbox");
-    configFile.config.useCharAddEvent = checkbox.getActive;
+    configFile.config.useCharAddEvent = b.getCharAddCheckBox.getActive;
 }
