@@ -17,8 +17,10 @@ class DcdWrapper
         cache = ModuleCache(new ASTAllocator);
         addImportPaths(importPaths);
 
-        infof("Import directories:\n    %-(%s\n    %)", cache.getImportPaths());
-        info(cache.symbolsAllocated, " symbols cached.");
+        import std.format;
+
+        nothrowLog!"info"(format("Import directories:\n    %-(%s\n    %)", cache.getImportPaths()));
+        nothrowLog!"info"("%d symbols cached.".format(cache.symbolsAllocated));
     }
 
     void addImportPaths(string[] pathLines)
@@ -39,7 +41,7 @@ class DcdWrapper
 
     void clearCache()
     {
-        info("Clearing cache.");
+        nothrowLog!"info"("Clearing cache.");
         cache.clear();
     }
 
