@@ -1,4 +1,4 @@
-module dcd_wrapper;
+module geany_dlang.dcd_wrapper;
 
 import dcd.server.server;
 import dsymbol.modulecache;
@@ -12,13 +12,12 @@ class DcdWrapper
 
     this()
     {
-        string[] importPaths = loadConfiguredImportDirs();
-
         cache = ModuleCache(new ASTAllocator);
-        addImportPaths(importPaths);
+    }
 
-        infof("Import directories:\n    %-(%s\n    %)", cache.getImportPaths());
-        info(cache.symbolsAllocated, " symbols cached.");
+    static string[] loadConfiguredImportDirs()
+    {
+        return loadConfiguredImportDirs();
     }
 
     void addImportPaths(string[] pathLines)

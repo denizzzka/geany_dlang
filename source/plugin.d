@@ -4,7 +4,7 @@ version(IntegrationTest){} else:
 
 import geany_d_binding.geany.plugins;
 import geany_d_binding.geany.types;
-import dcd_wrapper;
+import geany_dlang.dcd_wrapper;
 import geany_dlang.config: ConfigFile;
 import logger;
 import geany_d_binding.geany.sciwrappers;
@@ -267,6 +267,8 @@ void show_debug(guint key_id)
     nothrowLog!"info"(
         "Import paths:\n"~wrapper.listImportPaths.to!string
     );
+
+    nothrowLog!"info"(wrapper.cache.symbolsAllocated.to!string~" symbols cached.");
 }
 
 void force_completion(guint key_id)
