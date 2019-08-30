@@ -38,8 +38,10 @@ class ConfigFile
 
         if(!filepath.exists)
         {
-            filepath.append(""); // creates empty config file
             config = Config(); // default config will be used
+
+            import geany_dlang.dcd_wrapper: DcdWrapper;
+            config.additionalPaths = DcdWrapper.loadConfiguredImportDirs;
         }
         else
         {
@@ -57,6 +59,9 @@ class ConfigFile
         import std.stdio: File;
 
         auto root = config.toYAMLNode;
+
+        if(!filepath.exists)
+            filepath.append(""); // creates dirs tree and empty config file
 
         auto dumper = dumper();
         dumper.dump(File(filepath, "w").lockingTextWriter, root);
