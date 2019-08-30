@@ -15,7 +15,7 @@
         <col id="1" translatable="yes">dfghdfgdfg</col>
       </row>
       <row>
-        <col id="0">False</col>
+        <col id="0">True</col>
         <col id="1" translatable="yes">dfdfd 23</col>
       </row>
     </data>
@@ -122,6 +122,7 @@
                     </child>
                     <child>
                       <object class="GtkTreeViewColumn" id="path_enabled">
+                        <property name="visible">False</property>
                         <property name="sizing">fixed</property>
                         <property name="title" translatable="yes">Enabled</property>
                         <child>

@@ -23,9 +23,6 @@ extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dia
 
         auto list = cast(ListStore) builder.getObject("dir_list_store");
 
-        foreach(_; 0 .. 10)
-            list.addPath("test path");
-
         fillPrefsFromConfig(builder);
 
         auto box = cast(Box) builder.getObject("main_box");
@@ -65,17 +62,6 @@ private enum
     COLUMN_PATH,
 }
 
-void addPath(ListStore list, string path)
-{
-    import gtk.TreeIter;
-
-    //~ import gobject.Value;
-
-    TreeIter iterator = list.createIter();
-    //~ setValue(iterator, COLUMN_ENABLED, true);
-    list.setValue(iterator, COLUMN_PATH, path);
-}
-
 import gtk.ToggleButton;
 
 private auto getCharAddCheckBox(Builder b)
@@ -83,9 +69,23 @@ private auto getCharAddCheckBox(Builder b)
     return cast(ToggleButton) b.getObject("capture_charadded_checkbox");
 }
 
+private auto getPathsList(Builder b)
+{
+    return cast(ListStore) b.getObject("dir_list_store");
+}
+
 private void fillPrefsFromConfig(Builder b)
 {
     b.getCharAddCheckBox.setActive = configFile.config.useCharAddEvent;
+
+    auto list = b.getPathsList;
+    list.clear;
+
+    foreach(path; configFile.config.additionalPaths)
+    {
+        auto iterator = list.createIter();
+        list.setValue(iterator, COLUMN_PATH, path);
+    }
 }
 
 private void savePrefsToConfig(Builder b)
