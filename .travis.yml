@@ -1,0 +1,9 @@
+d:
+  - dmd
+
+script:
+  - cd geany_d_binding/
+  - dub build :example
+  - cd -
+  - dub build
+  - dub build --build=release

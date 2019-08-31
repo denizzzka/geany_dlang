@@ -1,7 +1,5 @@
 module geany_dlang.plugin;
 
-version(IntegrationTest){} else:
-
 import geany_d_binding.geany.plugins;
 import geany_d_binding.geany.types;
 import geany_dlang.dcd_wrapper;

@@ -6,17 +6,12 @@ license "GNU"
 dependency "dyaml" version="~>0.8.0"
 dependency "yamlserialized" version="~>0.4.0"
 dependency "dcd" version="~>0.12.0"
+dependency ":geany_d_binding" version="*"
 subConfiguration "dcd" "library"
 stringImportPaths "."
 
 configuration "default" {
-    dependency ":geany_d_binding" version="*"
     targetType "dynamicLibrary"
-}
-
-configuration "integration_test" {
-    targetType "executable"
-    versions "IntegrationTest"
 }
 
 subPackage "geany_d_binding"
