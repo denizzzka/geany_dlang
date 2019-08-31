@@ -15,13 +15,13 @@ extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dia
     import gtk.Dialog;
     import gobject.Signals;
 
+    nothrowLog!"trace"(__FUNCTION__);
+
     try
     {
         immutable guiDescr = import("preferences.glade");
         auto builder = new Builder();
         builder.addFromString(guiDescr);
-
-        auto list = cast(ListStore) builder.getObject("dir_list_store");
 
         fillPrefsFromConfig(builder);
 
@@ -38,6 +38,9 @@ extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dia
 
                 savePrefsToConfig(builder);
                 configFile.saveConf();
+
+                import geany_dlang.plugin;
+                wrapper.substituteDcdPaths(configFile.config.additionalPaths);
             }
         }
 
@@ -91,4 +94,16 @@ private void fillPrefsFromConfig(Builder b)
 private void savePrefsToConfig(Builder b)
 {
     configFile.config.useCharAddEvent = b.getCharAddCheckBox.getActive;
+
+    //~ auto list = b.getPathsList;
+    //~ auto iterator = list.createIter();
+
+    //~ configFile.config.additionalPaths.length = 0;
+
+    //~ configFile.config.additionalPaths ~= iterator.getValueString(COLUMN_PATH);
+
+    //~ foreach(row; list)
+    //~ {
+        //~ list.setValue(iterator, COLUMN_PATH, path);
+    //~ }
 }

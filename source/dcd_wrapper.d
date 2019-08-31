@@ -15,9 +15,9 @@ class DcdWrapper
         cache = ModuleCache(new ASTAllocator);
     }
 
-    static string[] loadConfiguredImportDirs() @safe
+    static string[] loadConfiguredImportDirs() @trusted
     {
-        return loadConfiguredImportDirs();
+        return dcd.server.server.loadConfiguredImportDirs();
     }
 
     void addImportPaths(string[] pathLines)

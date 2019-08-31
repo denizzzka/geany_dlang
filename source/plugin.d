@@ -212,6 +212,12 @@ AutocompleteResponse calculateCompletion(GeanyDocument* doc) nothrow
     return ret;
 }
 
+package void substituteDcdPaths(ref DcdWrapper wrapper, string[] paths)
+{
+    wrapper.cache.clear();
+    wrapper.addImportPaths = paths;
+}
+
 extern(System) nothrow:
 
 import gtkc.gobjecttypes: GObject;
@@ -278,12 +284,16 @@ void force_completion(guint key_id)
 
 gboolean initPlugin(GeanyPlugin *plugin, gpointer pdata)
 {
+    nothrowLog!"trace"(__FUNCTION__);
+
     geany_plugin = plugin;
 
     try
     {
-        wrapper = new DcdWrapper();
         configFile = new ConfigFile(plugin.geany_data);
+
+        wrapper = new DcdWrapper();
+        wrapper.substituteDcdPaths(configFile.config.additionalPaths);
     }
     catch(Exception e)
     {
