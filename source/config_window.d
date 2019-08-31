@@ -28,10 +28,14 @@ extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dia
 
         auto pathCellRenderer = cast(CellRendererText) builder.getObject("path_cell_renderer");
         pathCellRenderer.addOnEdited(
-            (string p, string val, CellRendererText cell)
+            (string position, string val, CellRendererText cell)
             {
-                auto list = getPathsList(builder);
-                auto iter = list.createIter;
+                import gtk.TreePath;
+                import gtk.TreeIter;
+
+                auto path = new TreePath(position);
+                auto list = builder.getPathsList;
+                auto iter = new TreeIter(list, path);
                 list.setValue(iter, COLUMN_PATH, val);
             }
         );
