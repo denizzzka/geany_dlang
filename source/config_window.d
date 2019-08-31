@@ -110,15 +110,19 @@ private void savePrefsToConfig(Builder b)
 {
     configFile.config.useCharAddEvent = b.getCharAddCheckBox.getActive;
 
-    //~ auto list = b.getPathsList;
-    //~ auto iterator = list.createIter();
+    configFile.config.additionalPaths.length = 0;
 
-    //~ configFile.config.additionalPaths.length = 0;
+    auto list = b.getPathsList;
 
-    //~ configFile.config.additionalPaths ~= iterator.getValueString(COLUMN_PATH);
+    auto iterator = list.createIter;
+    list.getIterFirst(iterator);
+    iterator.setModel(list);
 
-    //~ foreach(row; list)
-    //~ {
-        //~ list.setValue(iterator, COLUMN_PATH, path);
-    //~ }
+    do {
+        configFile.config.additionalPaths ~= iterator.getValueString(COLUMN_PATH);
+    }
+    while(list.iterNext(iterator));
+
+    // removes latest null string
+    configFile.config.additionalPaths = configFile.config.additionalPaths[0 .. $-1];
 }

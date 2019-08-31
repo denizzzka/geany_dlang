@@ -64,7 +64,9 @@ class ConfigFile
             filepath.append(""); // creates dirs tree and empty config file
 
         auto dumper = dumper();
-        dumper.dump(File(filepath, "w").lockingTextWriter, root);
+        auto file = File(filepath, "w");
+        dumper.dump(file.lockingTextWriter, root);
+        file.flush;
     }
 }
 
