@@ -12,6 +12,7 @@ extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dia
     import geany_dlang.config;
     import gtk.Box;
     import gtk.TreeView;
+    import gtk.CellRendererText;
     import gtk.Dialog;
     import gobject.Signals;
 
@@ -24,6 +25,16 @@ extern(System) GtkWidget* configWindowDialog(GeanyPlugin* plugin, GtkDialog* dia
         builder.addFromString(guiDescr);
 
         fillPrefsFromConfig(builder);
+
+        auto pathCellRenderer = cast(CellRendererText) builder.getObject("path_cell_renderer");
+        pathCellRenderer.addOnEdited(
+            (string p, string val, CellRendererText cell)
+            {
+                auto list = getPathsList(builder);
+                auto iter = list.createIter;
+                list.setValue(iter, COLUMN_PATH, val);
+            }
+        );
 
         auto box = cast(Box) builder.getObject("main_box");
         box.showAll;

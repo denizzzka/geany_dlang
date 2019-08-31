@@ -9,16 +9,6 @@
       <!-- column-name Path -->
       <column type="gchararray"/>
     </columns>
-    <data>
-      <row>
-        <col id="0">True</col>
-        <col id="1" translatable="yes">dfghdfgdfg</col>
-      </row>
-      <row>
-        <col id="0">True</col>
-        <col id="1" translatable="yes">dfdfd 23</col>
-      </row>
-    </data>
   </object>
   <object class="GtkBox" id="main_box">
     <property name="visible">True</property>
@@ -140,7 +130,7 @@
                         <property name="title" translatable="yes">Path</property>
                         <property name="expand">True</property>
                         <child>
-                          <object class="GtkCellRendererText">
+                          <object class="GtkCellRendererText" id="path_cell_renderer">
                             <property name="editable">True</property>
                           </object>
                           <attributes>
